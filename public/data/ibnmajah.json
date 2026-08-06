@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ibnmajah_224",
+    "collection": "Sunan Ibn Majah",
+    "book": "The Book of the Sunnah",
+    "chapter": 1,
+    "hadithNumber": 224,
+    "reference": "Sunan Ibn Majah 224",
+    "text": "The Messenger of Allah (ﷺ) said: \"Seeking knowledge is a duty upon every Muslim, and the one who imparts knowledge to those who do not worthy of it is like one who puts a necklace of jewels, pearls, and gold on pigs.\"",
+    "topics": ["knowledge", "education", "obligation"],
+    "keywords": ["knowledge", "obligation", "muslim", "teaching", "ilm", "duty"]
+  },
+  {
+    "id": "ibnmajah_229",
+    "collection": "Sunan Ibn Majah",
+    "book": "The Book of the Sunnah",
+    "chapter": 1,
+    "hadithNumber": 229,
+    "reference": "Sunan Ibn Majah 229",
+    "text": "It was narrated that Abu Hurairah said: \"The Messenger of Allah (ﷺ) said: 'The best of charity is when a Muslim man gains knowledge, then teaches it to his Muslim brother.'\"",
+    "topics": ["charity", "knowledge", "brotherhood", "teaching"],
+    "keywords": ["charity", "knowledge", "teaches", "brother", "sharing"]
+  },
+  {
+    "id": "ibnmajah_4102",
+    "collection": "Sunan Ibn Majah",
+    "book": "Asceticism (Zuhd)",
+    "chapter": 37,
+    "hadithNumber": 4102,
+    "reference": "Sunan Ibn Majah 4102",
+    "text": "The Prophet (ﷺ) said: \"Richness does not lie in many possessions, but true richness is the richness of the soul.\"",
+    "topics": ["wealth", "contentment", "soul"],
+    "keywords": ["richness", "possessions", "soul", "contentment", "zuhd", "ghina"]
+  },
+  {
+    "id": "ibnmajah_4159",
+    "collection": "Sunan Ibn Majah",
+    "book": "Asceticism (Zuhd)",
+    "chapter": 37,
+    "hadithNumber": 4159,
+    "reference": "Sunan Ibn Majah 4159",
+    "text": "The Messenger of Allah (ﷺ) said: \"If you were to rely upon Allah with the reliance He is due, He would provide for you just as He provides for the birds; they go out hungry in the morning and return full in the evening.\"",
+    "topics": ["trust", "provision", "reliance", "nature"],
+    "keywords": ["tawakkul", "rely", "provision", "birds", "hungry", "evening"]
+  }
+]

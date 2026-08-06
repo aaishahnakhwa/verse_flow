@@ -1,0 +1,74 @@
+{
+  "collections": [
+    {
+      "id": "quran",
+      "name": "Quran",
+      "enabled": true,
+      "dataPath": "data/quran.json",
+      "language": "en",
+      "translator": "Mustafa Khattab (Clear Quran)",
+      "description": "The central religious text of Islam, consisting of 114 chapters (surahs).",
+      "entryCount": 6236
+    },
+    {
+      "id": "bukhari",
+      "name": "Sahih al-Bukhari",
+      "enabled": true,
+      "dataPath": "data/bukhari.json",
+      "language": "en",
+      "translator": "Muhammad Muhsin Khan",
+      "description": "One of the Kutub al-Sittah (six major hadith collections) of Sunni Islam, compiled by Imam Bukhari.",
+      "entryCount": 6
+    },
+    {
+      "id": "muslim",
+      "name": "Sahih Muslim",
+      "enabled": true,
+      "dataPath": "data/muslim.json",
+      "language": "en",
+      "translator": "Abdul Hamid Siddiqui",
+      "description": "The second most authentic hadith collection in Sunni Islam, compiled by Imam Muslim.",
+      "entryCount": 5
+    },
+    {
+      "id": "tirmidhi",
+      "name": "Jami' at-Tirmidhi",
+      "enabled": true,
+      "dataPath": "data/tirmidhi.json",
+      "language": "en",
+      "translator": "Abu Khaliyl",
+      "description": "A major collection of hadith containing legal rulings and moral guidelines, compiled by Imam al-Tirmidhi.",
+      "entryCount": 4
+    },
+    {
+      "id": "abudawud",
+      "name": "Sunan Abu Dawud",
+      "enabled": true,
+      "dataPath": "data/abudawud.json",
+      "language": "en",
+      "translator": "Yaser Qadhi",
+      "description": "One of the six major collections of hadith, focusing primarily on legal traditions (ahkam).",
+      "entryCount": 4
+    },
+    {
+      "id": "nasai",
+      "name": "Sunan an-Nasa'i",
+      "enabled": true,
+      "dataPath": "data/nasai.json",
+      "language": "en",
+      "translator": "Nasiruddin al-Albani",
+      "description": "A collection of hadith with a strong focus on legal aspects and jurisprudence, compiled by Imam an-Nasa'i.",
+      "entryCount": 4
+    },
+    {
+      "id": "ibnmajah",
+      "name": "Sunan Ibn Majah",
+      "enabled": true,
+      "dataPath": "data/ibnmajah.json",
+      "language": "en",
+      "translator": "Muhammad Tufail Ansari",
+      "description": "One of the six major collections of hadith, compiled by Imam Ibn Majah.",
+      "entryCount": 4
+    }
+  ]
+}

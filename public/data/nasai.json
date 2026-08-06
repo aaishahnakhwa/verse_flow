@@ -1,0 +1,46 @@
+[
+  {
+    "id": "nasai_1",
+    "collection": "Sunan an-Nasa'i",
+    "book": "Purification",
+    "chapter": 1,
+    "hadithNumber": 1,
+    "reference": "Sunan an-Nasa'i 1",
+    "text": "The Prophet (ﷺ) said: \"Cleanliness is part of faith. When the believer washes his face, his sins fall from his face with the water, or with the last drop of water...\"",
+    "topics": ["purification", "forgiveness", "water"],
+    "keywords": ["wudu", "cleanliness", "sins", "water", "purification"]
+  },
+  {
+    "id": "nasai_468",
+    "collection": "Sunan an-Nasa'i",
+    "book": "Salah",
+    "chapter": 5,
+    "hadithNumber": 468,
+    "reference": "Sunan an-Nasa'i 468",
+    "text": "The Messenger of Allah (ﷺ) said: \"The first thing for which a servant will be brought to account on the Day of Resurrection will be his prayer. If it is good, then he will have succeeded and fallen short of nothing, but if it is bad, he will have failed and lost.\"",
+    "topics": ["prayer", "resurrection", "accountability"],
+    "keywords": ["salah", "prayer", "resurrection", "account", "success"]
+  },
+  {
+    "id": "nasai_2526",
+    "collection": "Sunan an-Nasa'i",
+    "book": "Zakat",
+    "chapter": 23,
+    "hadithNumber": 2526,
+    "reference": "Sunan an-Nasa'i 2526",
+    "text": "The Prophet (ﷺ) said: \"Charity does not decrease wealth, and Allah increases the honor of a servant who forgives, and no one humbles himself before Allah but Allah raises him in status.\"",
+    "topics": ["charity", "forgiveness", "humility", "wealth"],
+    "keywords": ["charity", "wealth", "forgive", "humility", "status"]
+  },
+  {
+    "id": "nasai_3106",
+    "collection": "Sunan an-Nasa'i",
+    "book": "Jihad",
+    "chapter": 25,
+    "hadithNumber": 3106,
+    "reference": "Sunan an-Nasa'i 3106",
+    "text": "A man came to the Prophet (ﷺ) and said: \"Instruct me on an action that equals Jihad.\" The Prophet (ﷺ) said: \"I do not find such an action. Can you, when the warrior goes out, enter your mosque and pray without ceasing and fast without breaking it?\" The man said: \"Who can do that?\"",
+    "topics": ["jihad", "struggle", "prayer", "fasting"],
+    "keywords": ["jihad", "mosque", "praying", "fasting", "warrior"]
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "muslim_1",
+    "collection": "Sahih Muslim",
+    "book": "Faith",
+    "chapter": 1,
+    "hadithNumber": 1,
+    "reference": "Sahih Muslim 1",
+    "text": "It is narrated on the authority of Yahya bin Ya'mur that the first man who spoke about Qadr (Divine Decree) in Basra was Ma'bad al-Juhani... Umar ibn al-Khattab narrated: One day while we were sitting with the Messenger of Allah (ﷺ) there appeared before us a man with extremely white clothes and extremely black hair... He said: Tell me about Islam. The Messenger of Allah (ﷺ) said: Islam is that you should testify that there is no deity worthy of worship except Allah and that Muhammad is His Messenger, that you should perform Salah, pay Zakah, fast during Ramadan, and perform Hajj to the House if you can find a way to it. He said: You have spoken the truth... He said: Tell me about Iman (Faith). The Prophet replied: That you affirm your faith in Allah, His angels, His books, His messengers, in the Day of Judgment, and in the Divine Decree (Qadr) whether it be good or bad...",
+    "topics": ["pillars of islam", "iman", "divine decree", "gabriel"],
+    "keywords": ["jibril", "qadr", "faith", "islam", "hadith jibril", "pillars"]
+  },
+  {
+    "id": "muslim_223",
+    "collection": "Sahih Muslim",
+    "book": "Purification",
+    "chapter": 2,
+    "hadithNumber": 223,
+    "reference": "Sahih Muslim 223",
+    "text": "The Messenger of Allah (ﷺ) said: Cleanliness is half of faith and Alhamdulillah (praise be to Allah) fills the scale, and Subhanallah (Glory be to Allah) and Alhamdulillah fill up what is between the heavens and the earth, and prayer is a light, and charity is a proof (of one's faith) and endurance (patience) is a glowing light, and the Quran is a proof on your behalf or against you. Every soul goes out in the morning and sells itself, thereby setting itself free or destroying itself.",
+    "topics": ["cleanliness", "praise", "patience", "charity", "quran"],
+    "keywords": ["taharah", "purity", "praise", "sabr", "prayer", "light", "charity", "sadaqah"]
+  },
+  {
+    "id": "muslim_2564",
+    "collection": "Sahih Muslim",
+    "book": "Virtues and Manners",
+    "chapter": 45,
+    "hadithNumber": 2564,
+    "reference": "Sahih Muslim 2564",
+    "text": "The Prophet (ﷺ) said: Do not envy one another, do not inflate prices for one another, do not hate one another, do not turn away from one another, and do not undercut one another in business transactions. Be, O servants of Allah, brothers. A Muslim is the brother of a Muslim: he does not oppress him, he does not fail him, and he does not look down upon him. Piety is here (and he pointed to his chest three times). It is evil enough for a man to look down upon his Muslim brother. Everything of a Muslim is sacred to a Muslim: his blood, his property, and his honor.",
+    "topics": ["brotherhood", "piety", "ethics", "social behavior"],
+    "keywords": ["envy", "hasad", "brother", "oppress", "piety", "taqwa", "sacred"]
+  },
+  {
+    "id": "muslim_2580",
+    "collection": "Sahih Muslim",
+    "book": "Virtues and Manners",
+    "chapter": 45,
+    "hadithNumber": 2580,
+    "reference": "Sahih Muslim 2580",
+    "text": "Allah's Messenger (ﷺ) said: Verily, Allah does not look at your appearance or your wealth, but He looks at your hearts and your actions.",
+    "topics": ["sincerity", "heart", "intentions", "actions"],
+    "keywords": ["wealth", "appearance", "hearts", "actions", "sincerity"]
+  },
+  {
+    "id": "muslim_2699",
+    "collection": "Sahih Muslim",
+    "book": "Knowledge and Remembrance",
+    "chapter": 48,
+    "hadithNumber": 2699,
+    "reference": "Sahih Muslim 2699",
+    "text": "He who treads a path in search of knowledge, Allah will make easy for him the path to Paradise. And those who assemble in one of the houses of Allah (mosques) to recite the Book of Allah and memorize it together, peace will descend upon them, mercy will cover them, the angels will surround them, and Allah will mention them to those who are with Him.",
+    "topics": ["knowledge", "study", "remembrance", "paradise"],
+    "keywords": ["knowledge", "paradise", "ilm", "mosque", "peace", "mercy", "angels"]
+  }
+]

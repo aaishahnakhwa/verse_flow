@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+@import "tailwindcss";
+
+/* Enable class-based dark mode toggling in Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-cinzel: 'Cinzel', serif;
+
+  /* Custom Golden Arabic Redesign Palette */
+  --color-gold-50: #fefdf6;
+  --color-gold-100: #fdf9e2;
+  --color-gold-200: #f9f0b5;
+  --color-gold-300: #f4e17e;
+  --color-gold-400: #ecc947;
+  --color-gold-500: #dca523; /* Primary Luxury Gold */
+  --color-gold-600: #be8417;
+  --color-gold-700: #9e6414;
+  --color-gold-800: #804e14;
+  --color-gold-900: #694013;
+  --color-gold-950: #3d2207;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    /* Soft honey-gold yellow (#e6ce90) for light mode, warm gold-tinted obsidian (#15120d) for dark mode */
+    @apply bg-[#e6ce90] text-slate-800 dark:bg-[#15120d] dark:text-stone-100 transition-colors duration-300 antialiased selection:bg-gold-200/50 dark:selection:bg-gold-950/40;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cinzel);
+    @apply tracking-wide font-medium;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+/* Subtle, authentic Islamic geometric pattern background overlay */
+.bg-islamic-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 0 L48 24 L72 32 L48 40 L40 64 L32 40 L8 32 L32 24 Z' fill='%23dca523' fill-opacity='0.02'/%3E%3Cpath d='M40 12 L43 28 L59 31 L43 34 L40 50 L37 34 L21 31 L37 28 Z' fill='%23dca523' fill-opacity='0.015'/%3E%3C/svg%3E");
+}
+
+/* Premium glassmorphism - clean white backgrounds in light mode */
+.glass {
+  @apply backdrop-blur-md bg-white/80 border border-stone-200/50 dark:bg-[#201b13]/80 dark:border-gold-500/10 shadow-xs;
+}
+
+.glass-card {
+  @apply backdrop-blur-md bg-white border border-stone-200/60 dark:bg-[#201b13]/60 dark:border-gold-500/10 shadow-xs transition-all duration-300;
+}
+
+/* High-contrast Glowing brand name (Tailwind v4 utility declaration) */
+@utility brand-name-glow {
+  color: #4a2f03; /* Deep bronze for readability */
+  text-shadow: 0 0 6px #fff, 0 0 14px #dca523, 0 0 22px #dca523;
+  transition: text-shadow 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.dark .brand-name-glow {
+  color: #fdf9e2;
+  text-shadow: 0 0 10px #fff, 0 0 20px #dca523, 0 0 30px #dca523;
+}
+
+.group:hover .brand-name-glow,
+.brand-name-glow:hover {
+  text-shadow: 0 0 12px #fff, 0 0 24px #dca523, 0 0 40px #dca523;
+}
+
+/* High-contrast Glowing logo box */
+@utility logo-box-glow {
+  box-shadow: 0 0 12px #dca523;
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.group:hover .logo-box-glow {
+  box-shadow: 0 0 25px #dca523, 0 0 10px rgba(220, 165, 35, 0.5);
+  transform: scale(1.05);
+}
+
+/* Luxurious gold highlights and soft ambient glows for cards */
+.gold-glow {
+  @apply transition-all duration-300 hover:shadow-[0_0_20px_rgba(220,165,35,0.08)] hover:border-gold-500/35 dark:hover:shadow-[0_0_30px_rgba(220,165,35,0.15)] dark:hover:border-gold-500/30;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-stone-300 dark:bg-stone-800 rounded-full hover:bg-gold-500/40 dark:hover:bg-gold-500/30;
+}
+
+/* Highlighted words inside search matches */
+mark {
+  @apply bg-gold-200/60 dark:bg-gold-950/40 text-gold-900 dark:text-gold-200 font-bold px-0.5 rounded-xs transition-all duration-200;
+}
+
+/* Print-specific layout formatting for Vector PDFs */
+@media print {
+  /* Reset body and hide all background layers and page headers/footers */
+  html, body {
+    background: white !important;
+    background-color: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide all generic page contents, overlays, backgrounds, and sidebars */
+  header,
+  footer,
+  .no-print,
+  button,
+  .backdrop {
+    display: none !important;
+  }
+
+  /* Remove geometric backgrounds and layouts during printing */
+  .bg-islamic-pattern,
+  #root,
+  .min-h-screen,
+  main {
+    display: block !important;
+    background: white !important;
+    background-image: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  /* Force display of the modal wrapper with block positioning */
+  .print-modal-container {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    z-index: auto !important;
+    background: white !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+  }
+
+  .print-modal-content {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Force scrollable viewport to extend fully without scrolling */
+  .print-verses-scroller {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+  }
+
+  /* Show the print header block at the top */
+  .print-header-block {
+    display: block !important;
+  }
+
+  /* Individual verse blocks */
+  .print-verse-item {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border: none !important;
+    border-bottom: 1px solid #eee !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Right-align Arabic script in print */
+  .print-verse-item p[dir="rtl"] {
+    font-size: 22pt !important;
+    line-height: 2.2 !important;
+    color: black !important;
+    margin: 10px 0 !important;
+    text-align: right !important;
+  }
+
+  /* Style transliteration in print */
+  .print-verse-item p.font-serif-italic {
+    font-size: 10pt !important;
+    color: #444 !important;
+    margin-bottom: 8px !important;
+    text-align: left !important;
+  }
+
+  /* Left-align Translation */
+  .print-verse-item p.text-base,
+  .print-verse-item div.text-base {
+    font-size: 11pt !important;
+    color: black !important;
+    text-align: left !important;
+    border-left: 2px solid #333 !important;
+    padding-left: 10px !important;
+    margin: 0 !important;
+  }
+}

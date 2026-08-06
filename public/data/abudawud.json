@@ -1,0 +1,46 @@
+[
+  {
+    "id": "abudawud_1",
+    "collection": "Sunan Abu Dawud",
+    "book": "Purification",
+    "chapter": 1,
+    "hadithNumber": 1,
+    "reference": "Sunan Abu Dawud 1",
+    "text": "The Prophet (ﷺ) said: \"When any of you relieves himself, let him not face the Qiblah nor turn his back to it, but face the East or the West (when in Medina).\"",
+    "topics": ["purification", "etiquette", "prayer direction"],
+    "keywords": ["qiblah", "relieving", "etiquette", "east", "west", "medina"]
+  },
+  {
+    "id": "abudawud_1681",
+    "collection": "Sunan Abu Dawud",
+    "book": "Zakat",
+    "chapter": 9,
+    "hadithNumber": 1681,
+    "reference": "Sunan Abu Dawud 1681",
+    "text": "The Prophet (ﷺ) said: \"The upper hand is better than the lower hand (i.e. the one who gives charity is better than the one who takes it). And begin with those who are your dependents.\"",
+    "topics": ["charity", "zakat", "dependents", "work ethic"],
+    "keywords": ["upper", "lower", "hand", "giving", "charity", "dependents"]
+  },
+  {
+    "id": "abudawud_4815",
+    "collection": "Sunan Abu Dawud",
+    "book": "General Behavior",
+    "chapter": 41,
+    "hadithNumber": 4815,
+    "reference": "Sunan Abu Dawud 4815",
+    "text": "The Messenger of Allah (ﷺ) said: \"A man follows the religion of his close friend, so let each of you look carefully at whom he takes as a close friend.\"",
+    "topics": ["companionship", "friendship", "influence"],
+    "keywords": ["friend", "religion", "company", "influence", "companionship"]
+  },
+  {
+    "id": "abudawud_4941",
+    "collection": "Sunan Abu Dawud",
+    "book": "General Behavior",
+    "chapter": 41,
+    "hadithNumber": 4941,
+    "reference": "Sunan Abu Dawud 4941",
+    "text": "The Messenger of Allah (ﷺ) said: \"He who does not show mercy to our young ones and does not recognize the rights of our elders is not one of us.\"",
+    "topics": ["mercy", "elders", "manners", "respect"],
+    "keywords": ["mercy", "young", "elders", "respect", "family", "community"]
+  }
+]

@@ -35,7 +35,7 @@ export function CounselMode({
   const [isAiSending, setIsAiSending] = React.useState(false);
   const [showSettings, setShowSettings] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState('');
-  const [chatMessages, setChatMessages] = React.useState<Array<{ role: 'user' | 'assistant'; content: string }>>([
+  const [chatMessages, setChatMessages] = React.useState<Array<{ role: 'user' | 'assistant'; content: string; respondingModel?: string }>>([
     {
       role: 'assistant',
       content: 'Assalamu Alaikum. I am your AI Spiritual Counselor. Please feel free to share what is weighing on your heart, or ask any theological questions about the Quran, Hadith, or Islamic history. I am here to offer comforting wisdom and relevant scriptural references.'
@@ -170,7 +170,8 @@ export function CounselMode({
 
       const data = await response.json();
       const reply = data.choices?.[0]?.message?.content || 'I could not retrieve an answer. Please try again.';
-      setChatMessages(prev => [...prev, { role: 'assistant' as const, content: reply }]);
+      const actualModel = data.model || aiModel;
+      setChatMessages(prev => [...prev, { role: 'assistant' as const, content: reply, respondingModel: actualModel }]);
     } catch (err) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'A network error occurred. Please verify your internet connection or API Key.';
@@ -488,6 +489,11 @@ export function CounselMode({
                     <div className="leading-relaxed font-semibold whitespace-pre-wrap font-sans text-xs">
                       {msg.role === 'assistant' ? renderMessageContent(msg.content) : msg.content}
                     </div>
+                    {msg.role === 'assistant' && msg.respondingModel && (
+                      <div className="text-[9px] text-slate-400/80 dark:text-slate-500/80 font-display block pt-1.5 text-right font-medium italic border-t border-gold-500/5 mt-2 leading-none">
+                        Responded via: {msg.respondingModel}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

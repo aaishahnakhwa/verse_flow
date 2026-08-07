@@ -29,10 +29,8 @@ export function CounselMode({
   const [isSearching, setIsSearching] = React.useState(false);
 
   // Live AI Chat Mode States
-  const [apiKey, setApiKey] = React.useState(() => {
-    return localStorage.getItem('openrouter_api_key') || '';
-  });
-  const [aiModel, setAiModel] = React.useState('meta-llama/llama-3.1-8b-instruct:free');
+  const apiKey = (import.meta.env.VITE_OPENROUTER_API_KEY as string) || localStorage.getItem('openrouter_api_key') || '';
+  const [aiModel, setAiModel] = React.useState('openrouter/free');
   const [chatInput, setChatInput] = React.useState('');
   const [isAiSending, setIsAiSending] = React.useState(false);
   const [showSettings, setShowSettings] = React.useState(false);
@@ -458,9 +456,8 @@ export function CounselMode({
                     onChange={(e) => setAiModel(e.target.value)}
                     className="w-full h-10 px-3 rounded-lg bg-white dark:bg-[#161a22] border border-stone-200 dark:border-gold-500/25 text-xs text-slate-800 dark:text-gold-200 focus:outline-hidden focus:border-gold-500 cursor-pointer"
                   >
-                    <option value="meta-llama/llama-3.1-8b-instruct:free">Meta: Llama 3.1 8B Free (100% Free - 128k Context)</option>
-                    <option value="google/gemma-2-9b-it:free">Google: Gemma 2 9B Free (100% Free - 8k Context)</option>
-                    <option value="mistralai/mistral-7b-instruct:free">Mistral: Mistral 7B Free (100% Free - 32k Context)</option>
+                    <option value="openrouter/free">OpenRouter: Auto-select Free Model (Recommended - 100% Free)</option>
+                    <option value="meta-llama/llama-3-8b-instruct:free">Meta: Llama 3 8B Free (100% Free - 8k Context)</option>
                   </select>
                 </div>
               </div>

@@ -20,6 +20,7 @@ import { SidebarNav } from './components/SidebarNav';
 import { ReaderMode } from './components/ReaderMode';
 import { Button } from './components/ui/Button';
 import { CounselMode } from './components/CounselMode';
+import { ReferenceHub } from './components/ReferenceHub';
 
 const POPULAR_SEARCHES = ['patience', 'anxiety', 'depression', 'charity', '2:255', 'Moses', 'forgiveness', 'knowledge'];
 
@@ -38,8 +39,9 @@ export default function App() {
   const [selectedJuz, setSelectedJuz] = React.useState('');
   
   // 3. View Management
-  const [activeView, setActiveView] = React.useState<'search' | 'advanced' | 'bookmarks' | 'counsel'>('search');
+  const [activeView, setActiveView] = React.useState<'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference'>('search');
   const [isHelpOpen, setIsHelpOpen] = React.useState(false);
+  const [isMobileConcordanceOpen, setIsMobileConcordanceOpen] = React.useState(false);
 
   // 4. Index Loading states
   const [isEngineLoading, setIsEngineLoading] = React.useState(true);
@@ -273,12 +275,27 @@ export default function App() {
     }
   };
 
-  const handleClearFilters = () => {
+  const handleClearFilters = async () => {
     setSelectedBook('');
     setSelectedTopic('');
     setSelectedChapter('');
     setSelectedJuz('');
     setExactPhrase(false);
+    
+    // Re-enable all libraries to reset query scope
+    for (const col of collections) {
+      if (!col.enabled) {
+        await handleToggleCollection(col.id);
+      }
+    }
+  };
+
+  const handleSelectAllCollections = async (enable: boolean) => {
+    for (const col of collections) {
+      if (col.enabled !== enable) {
+        await handleToggleCollection(col.id);
+      }
+    }
   };
 
   // Triggers search for suggestion terms
@@ -308,7 +325,8 @@ export default function App() {
     }
   };
 
-  const isFilterActive = !!(selectedBook || selectedTopic || selectedChapter || exactPhrase || selectedJuz);
+  const disabledCollectionsCount = collections.filter(c => !c.enabled).length;
+  const isFilterActive = !!(selectedBook || selectedTopic || selectedChapter || exactPhrase || selectedJuz || disabledCollectionsCount > 0);
 
   return (
     <Layout
@@ -405,29 +423,142 @@ export default function App() {
                     />
 
                     {/* Mobile Browse Concordance (Collapsible) */}
-                    <div className="lg:hidden block">
-                      <div className="glass p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
-                        <SidebarNav
-                          collections={collections}
-                          loadedCollectionIds={loadedCollectionIds}
-                          selectedBook={selectedBook}
-                          selectedChapter={selectedChapter}
-                          onBookSelect={(book, colId) => {
-                            setSelectedBook(book);
-                            setSelectedChapter('');
-                            setLimit(50);
-                            const col = collections.find(c => c.id === colId);
-                            if (col && !col.enabled) {
-                              handleToggleCollection(colId);
-                            }
-                          }}
-                          onChapterSelect={handleChapterChange}
-                          getBooksForCollection={(colName) => searchEngine.getBooksForCollection(colName)}
-                          getChaptersForBook={(bookName) => searchEngine.getChaptersForBook(bookName)}
-                          onClearFilters={handleClearFilters}
-                        />
-                      </div>
+                    <div className="lg:hidden block no-print">
+                      <button
+                        onClick={() => setIsMobileConcordanceOpen(!isMobileConcordanceOpen)}
+                        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-stone-200/60 dark:border-gold-500/20 bg-white/60 dark:bg-[#15120d]/40 text-xs font-bold font-display uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gold-950/10 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-4 w-4 text-gold-500" />
+                          <span>Browse Concordance (Juz / Surah / Books)</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold font-display">
+                          {isMobileConcordanceOpen ? 'Hide' : 'Show'}
+                        </span>
+                      </button>
+                      
+                      {isMobileConcordanceOpen && (
+                        <div className="mt-2.5 glass p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
+                          <SidebarNav
+                            collections={collections}
+                            loadedCollectionIds={loadedCollectionIds}
+                            selectedBook={selectedBook}
+                            selectedChapter={selectedChapter}
+                            onBookSelect={(book, colId) => {
+                              setSelectedBook(book);
+                              setSelectedChapter('');
+                              setLimit(50);
+                              const col = collections.find(c => c.id === colId);
+                              if (col && !col.enabled) {
+                                handleToggleCollection(colId);
+                              }
+                            }}
+                            onChapterSelect={handleChapterChange}
+                            getBooksForCollection={(colName) => searchEngine.getBooksForCollection(colName)}
+                            getChaptersForBook={(bookName) => searchEngine.getChaptersForBook(bookName)}
+                            onClearFilters={handleClearFilters}
+                          />
+                        </div>
+                      )}
                     </div>
+
+                    {/* Active Filters Chip Bar */}
+                    {isFilterActive && (
+                      <div className="flex flex-wrap items-center gap-2 p-2 bg-gold-500/5 dark:bg-gold-500/2.5 border border-gold-500/10 rounded-2xl max-w-2xl mx-auto text-left animate-in fade-in slide-in-from-top-1 duration-200 no-print">
+                        <span className="text-[10px] font-bold font-display uppercase tracking-wider text-slate-400 dark:text-gold-500/60 pl-1.5">
+                          Active Filters:
+                        </span>
+
+                        {/* Libraries scope chips */}
+                        {collections.map(col => {
+                          if (!col.enabled) return null;
+                          return (
+                            <span key={col.id} className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold font-display text-emerald-700 dark:text-emerald-400">
+                              <span>Lib: {col.name}</span>
+                              <button 
+                                onClick={() => handleToggleCollection(col.id)} 
+                                className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                                title={`Disable ${col.name}`}
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          );
+                        })}
+                        
+                        {selectedJuz && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/20 text-[10px] font-bold font-display text-gold-700 dark:text-gold-400">
+                            <span>Juz {selectedJuz}</span>
+                            <button 
+                              onClick={() => setSelectedJuz('')} 
+                              className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                              title="Remove Juz Filter"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        )}
+
+                        {selectedBook && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/20 text-[10px] font-bold font-display text-gold-700 dark:text-gold-400">
+                            <span>{availableSurahs.includes(selectedBook) ? 'Surah: ' : 'Book: '}{selectedBook}</span>
+                            <button 
+                              onClick={() => setSelectedBook('')} 
+                              className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                              title="Remove Selection"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        )}
+
+                        {selectedTopic && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/20 text-[10px] font-bold font-display text-gold-700 dark:text-gold-400">
+                            <span>Topic: {selectedTopic}</span>
+                            <button 
+                              onClick={() => setSelectedTopic('')} 
+                              className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                              title="Remove Topic Filter"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        )}
+
+                        {selectedChapter && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/20 text-[10px] font-bold font-display text-gold-700 dark:text-gold-400">
+                            <span>Num: {selectedChapter}</span>
+                            <button 
+                              onClick={() => setSelectedChapter('')} 
+                              className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                              title="Remove Number Filter"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        )}
+
+                        {exactPhrase && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-500/15 border border-gold-500/20 text-[10px] font-bold font-display text-gold-700 dark:text-gold-400">
+                            <span>Exact Phrase</span>
+                            <button 
+                              onClick={() => setExactPhrase(false)} 
+                              className="hover:text-red-500 cursor-pointer text-[9px] font-bold"
+                              title="Disable Exact Match"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        )}
+
+                        <button
+                          onClick={handleClearFilters}
+                          className="ml-auto text-[9px] font-bold font-display text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 uppercase tracking-widest px-2 py-0.5 rounded hover:bg-red-500/5 cursor-pointer transition-colors"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                    )}
 
                     {/* Filter panel drawer */}
                     <FilterPanel
@@ -435,6 +566,7 @@ export default function App() {
                       loadedCollectionIds={loadedCollectionIds}
                       loadingCollections={loadingCollections}
                       onToggleCollection={handleToggleCollection}
+                      onSelectAllCollections={handleSelectAllCollections}
                       selectedBook={selectedBook}
                       onBookChange={handleBookChange}
                       availableHadithBooks={availableHadithBooks}
@@ -624,6 +756,11 @@ export default function App() {
                 onToggleBookmark={handleToggleBookmark}
                 onReadContext={handleOpenReader}
               />
+            )}
+
+            {/* View 5: Reference Guides Hub */}
+            {activeView === 'reference' && (
+              <ReferenceHub />
             )}
           </motion.div>
         )}

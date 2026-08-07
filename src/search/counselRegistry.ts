@@ -115,15 +115,17 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
   },
   {
     id: 'guilt',
-    categoryName: 'Guilt, Mistakes & Forgiveness',
-    emoji: '🕊️',
+    categoryName: 'Guilt, Repentance & Forgiveness (Tawbah)',
+    emoji: '🤲',
     keywords: {
       guilt: 4.0, sin: 4.0, sins: 4.0, forgive: 3.0, mistake: 3.0, regret: 3.0,
-      repent: 4.0, repentance: 4.0, bad: 1.0, ashamed: 4.0, shame: 4.0, wrongdoer: 3.5, wronged: 3.0
+      repent: 5.0, repentance: 5.0, bad: 1.0, ashamed: 4.0, shame: 4.0, wrongdoer: 3.5, wronged: 3.0,
+      cheated: 5.0, cheating: 5.0, adultery: 5.0, zina: 5.0, betray: 4.0, betrayal: 4.0, cheat: 5.0,
+      lying: 3.0, dishonest: 3.5, dishonesties: 3.5, lied: 3.0
     },
-    excludeKeywords: ['job', 'money', 'exams', 'illness', 'cancer', 'sick', 'divorce', 'marriage', 'funeral', 'died'],
-    counselText: 'No matter the scale of your mistakes, the Quran leaves no room for despair. Despairing of Allah’s mercy is strongly discouraged. In Surah Az-Zumar (39:53), Allah calls out: "Say, \'O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins.\'" Sincere repentance (Tawbah) immediately washes away sins, returning you to a clean spiritual slate.',
-    matchingVerses: ['39:53', '7:23', '2:222', '3:135', '11:114'],
+    excludeKeywords: ['job', 'money', 'exams', 'illness', 'cancer', 'sick', 'funeral', 'died'],
+    counselText: 'If you are struggling with guilt from a major mistake, betrayal, or transgression (such as cheating, lying, or other sins), know that the door of Tawbah (repentance) remains open as long as you draw breath. Islam teaches that Allah is Al-Ghafur (The Forgiving) and Al-Rahim (The Merciful). The Prophet Muhammad (peace be upon him) reassured us: "The one who repents from sin is like one who has no sin at all." Sincere repentance in Islam has three criteria: (1) stopping the transgression immediately, (2) feeling genuine remorse in your heart, and (3) firmly resolving never to repeat it. If your mistake directly harmed another person (such as your spouse), you must also do your utmost to seek their forgiveness, restore trust, and consult a trusted marital counselor or scholar to help guide the healing process.',
+    matchingVerses: ['39:53', '25:70', '3:135', '4:110', '2:222'],
     matchingHadiths: ['bukhari_1', 'muslim_2580', 'nasai_1', 'nasai_2526'],
     recommendedDua: {
       arabic: 'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ',
@@ -188,6 +190,83 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
       english: 'There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.',
       reference: 'Quran 21:87 (The Du’a of Yunus in the whale)'
     }
+  },
+  {
+    id: 'parents',
+    categoryName: 'Kindness & Patience with Parents',
+    emoji: '🧓',
+    keywords: {
+      parents: 4.5, mother: 5.0, father: 5.0, mom: 4.0, dad: 4.0, parent: 4.0,
+      disobedient: 4.0, argue: 3.0, respect: 3.5, relationship: 2.0, respectparents: 5.0
+    },
+    excludeKeywords: ['died', 'death', 'funeral', 'passed away', 'grave', 'job', 'exams'],
+    counselText: 'Kindness to parents (Birr al-Walidayn) is one of the highest virtues in Islam, ranked immediately after worshiping Allah alone. In Surah Al-Isra (17:23), Allah commands: "Do not say to them [even] \'uff\' and do not repel them but speak to them a noble word." Even when parents are challenging, hold different values, or cause stress, Islam instructs us to treat them with patience and gentle speech, while keeping your boundaries halal. Continuously pray for their guidance and well-being.',
+    matchingVerses: ['17:23', '17:24', '31:14', '31:15', '46:15'],
+    matchingHadiths: ['bukhari_3010', 'tirmidhi_1986'],
+    recommendedDua: {
+      arabic: 'رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',
+      transliteration: 'Rabbi-rhamhuma kama rabbayani saghira.',
+      english: 'My Lord, have mercy upon them as they brought me up when I was small.',
+      reference: 'Quran 17:24'
+    }
+  },
+  {
+    id: 'desires',
+    categoryName: 'Resisting Desires & Modesty (Haya)',
+    emoji: '🛡️',
+    keywords: {
+      lust: 5.0, desires: 4.0, temptation: 4.0, watch: 2.0, badhabits: 4.0,
+      loweringgaze: 5.0, gaze: 4.5, pornography: 5.0, porn: 5.0, chastity: 4.5, modesty: 4.5, haya: 5.0
+    },
+    excludeKeywords: ['job', 'money', 'exams', 'illness', 'cancer', 'died', 'funeral'],
+    counselText: 'Resisting desires (Nafs) and maintaining modesty (Haya) is a lifelong spiritual struggle (Jihad al-Nafs). The Quran instructs believers in Surah An-Nur (24:30) to lower their gaze and guard their private parts, describing it as "purer for them." Guarding your eyes and thoughts shields the heart from spiritual darkness. When facing temptations, turn to constant prayer, maintain clean company, and consider fasting as recommended by the Prophet to build self-discipline.',
+    matchingVerses: ['24:30', '24:31', '12:53', '79:40', '79:41'],
+    matchingHadiths: ['bukhari_1', 'muslim_223', 'tirmidhi_2516'],
+    recommendedDua: {
+      arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْهُدَى وَالتُّقَى وَالْعَفَافَ وَالْغِنَى',
+      transliteration: 'Allahumma inni as\'alukal-huda wat-tuqa wal-\'afafa wal-ghina.',
+      english: 'O Allah, I ask You for guidance, piety, chastity, and self-sufficiency.',
+      reference: 'Sahih Muslim 2721'
+    }
+  },
+  {
+    id: 'gratitude',
+    categoryName: 'Gratitude & Contentment (Shukr)',
+    emoji: '🌻',
+    keywords: {
+      ungrateful: 5.0, complaining: 4.0, jealousy: 5.0, jealous: 5.0, hasad: 5.0,
+      envy: 5.0, unhappy: 3.5, discontent: 4.0, compare: 4.0, comparison: 4.0,
+      blessings: 3.5, gratitude: 4.0, shukr: 4.5, happy: 2.0
+    },
+    excludeKeywords: ['died', 'death', 'funeral', 'passed away', 'illness', 'cancer'],
+    counselText: 'Comparing our worldly state to others breeds discontentment and jealousy (Hasad), which eats away good deeds. The Quran reminds us in Surah Ibrahim (14:7): "If you are grateful, I will surely increase you." The Prophet (peace be upon him) advised: "Look at those who are beneath you [in worldly goods] and do not look at those who are above you, for it is more suitable that you do not underestimate the blessings of Allah." Cultivate Shukr (gratitude) daily to find true peace.',
+    matchingVerses: ['14:7', '55:13', '2:152', '93:11'],
+    matchingHadiths: ['muslim_223', 'tirmidhi_1986', 'ibnmajah_4159'],
+    recommendedDua: {
+      arabic: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+      transliteration: 'Allahumma a\'inni \'ala dhikrika wa shukrika wa husni \'ibadatik.',
+      english: 'O Allah, help me remember You, thank You, and worship You in the best manner.',
+      reference: 'Sunan Abi Dawud 1522'
+    }
+  },
+  {
+    id: 'pride',
+    categoryName: 'Humility vs Pride & Ego (Kibr)',
+    emoji: '🍃',
+    keywords: {
+      pride: 5.0, proud: 4.0, arrogant: 5.0, arrogance: 5.0, ego: 4.0, selfish: 3.0,
+      superior: 4.0, lookdown: 4.0, kibr: 5.0, vanity: 4.5, showingoff: 5.0, riya: 4.5
+    },
+    excludeKeywords: ['died', 'death', 'funeral', 'illness', 'cancer', 'sick', 'debt'],
+    counselText: 'Pride (Kibr) and vanity are the spiritual diseases that led to Satan’s downfal. The Prophet defined pride as "disdaining the truth and looking down on people." Humility before Allah and His creation is the key to spiritual elevation. The Quran warns in Surah Al-Isra (17:37): "And do not walk upon the earth exultantly. Indeed, you will never tear the earth [apart], and you will never reach the mountains in height." Purify your intentions from showing off (Riya) and practice humility.',
+    matchingVerses: ['17:37', '31:18', '25:63', '2:34'],
+    matchingHadiths: ['muslim_2580', 'tirmidhi_2002', 'tirmidhi_2516'],
+    recommendedDua: {
+      arabic: 'اللَّهُمَّ أَعُوذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لَا أَعْلَمُ',
+      transliteration: 'Allahumma inni a\'udhu bika an ushrika bika wa ana a\'lam, wa astaghfiruka lima la a\'lam.',
+      english: 'O Allah, I seek refuge in You from associating partners with You while I know, and I seek Your forgiveness for what I do not know.',
+      reference: 'Al-Adab Al-Mufrad 716 (Du’a against showing off/pride)'
+    }
   }
 ];
 
@@ -218,6 +297,28 @@ export function findBestProfile(userInput: string): CounselingProfile {
 
   if (normalized.includes('feel lost') || normalized.includes('feeling lost') || normalized.includes('lost in life') || normalized.includes('purpose of life') || normalized.includes('pointless') || normalized.includes('confused') || normalized.includes('lack direction') || normalized.includes('meaning of life')) {
     return COUNSELING_REGISTRY.find(c => c.id === 'purpose')!;
+  }
+
+  if (normalized.includes('cheated') || normalized.includes('adultery') || normalized.includes('zina') || normalized.includes('committed a sin') || normalized.includes('how to repent') || normalized.includes('repentance') || normalized.includes('cheating') || normalized.includes('betrayed my') || normalized.includes('cheat on')) {
+    return COUNSELING_REGISTRY.find(c => c.id === 'guilt')!;
+  }
+
+  if (normalized.includes('mother') || normalized.includes('father') || normalized.includes('parents') || normalized.includes('mom') || normalized.includes('dad') || normalized.includes('disobedient') || normalized.includes('argue with parents')) {
+    if (!normalized.includes('died') && !normalized.includes('death') && !normalized.includes('passed away')) {
+      return COUNSELING_REGISTRY.find(c => c.id === 'parents')!;
+    }
+  }
+
+  if (normalized.includes('lust') || normalized.includes('desires') || normalized.includes('porn') || normalized.includes('pornography') || normalized.includes('gaze') || normalized.includes('modesty') || normalized.includes('haya') || normalized.includes('temptation') || normalized.includes('chastity')) {
+    return COUNSELING_REGISTRY.find(c => c.id === 'desires')!;
+  }
+
+  if (normalized.includes('jealous') || normalized.includes('jealousy') || normalized.includes('hasad') || normalized.includes('envy') || normalized.includes('ungrateful') || normalized.includes('gratitude') || normalized.includes('complaining') || normalized.includes('compare')) {
+    return COUNSELING_REGISTRY.find(c => c.id === 'gratitude')!;
+  }
+
+  if (normalized.includes('arrogant') || normalized.includes('arrogance') || normalized.includes('proud') || normalized.includes('ego') || normalized.includes('kibr') || normalized.includes('showing off') || normalized.includes('superior')) {
+    return COUNSELING_REGISTRY.find(c => c.id === 'pride')!;
   }
 
   // ==========================================

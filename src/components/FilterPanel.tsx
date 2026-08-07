@@ -10,6 +10,7 @@ interface FilterPanelProps {
   loadedCollectionIds: Set<string>;
   loadingCollections: string[]; // collection IDs currently fetching
   onToggleCollection: (id: string) => void;
+  onSelectAllCollections: (enable: boolean) => void; // bulk toggle helper
   selectedBook: string;
   onBookChange: (book: string) => void;
   availableHadithBooks: string[]; // books list excluding Quran
@@ -30,6 +31,7 @@ export function FilterPanel({
   loadedCollectionIds,
   loadingCollections,
   onToggleCollection,
+  onSelectAllCollections,
   selectedBook,
   onBookChange,
   availableHadithBooks,
@@ -94,9 +96,28 @@ export function FilterPanel({
             <div className="glass p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 space-y-4 mb-4">
               {/* Collections Checklist */}
               <div>
-                <span className="text-[11px] font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-2 px-1">
-                  Scripture Libraries
-                </span>
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <span className="text-[11px] font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                    Scripture Libraries
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onSelectAllCollections(true)}
+                      className="text-[9px] font-bold font-display text-gold-600 hover:text-gold-700 dark:text-gold-500 dark:hover:text-gold-400 uppercase tracking-wider cursor-pointer"
+                    >
+                      Select All
+                    </button>
+                    <span className="text-slate-300 dark:text-slate-700 text-[9px] font-bold select-none">•</span>
+                    <button
+                      type="button"
+                      onClick={() => onSelectAllCollections(false)}
+                      className="text-[9px] font-bold font-display text-gold-600 hover:text-gold-700 dark:text-gold-500 dark:hover:text-gold-400 uppercase tracking-wider cursor-pointer"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {collections.map((col) => {
                     const isLoaded = loadedCollectionIds.has(col.id);

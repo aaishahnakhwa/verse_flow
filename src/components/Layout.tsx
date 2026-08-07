@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart } from 'lucide-react';
+import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart, BookOpen } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface LayoutProps {
   children: React.ReactNode;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
-  activeView: 'search' | 'advanced' | 'bookmarks' | 'counsel';
-  onViewChange: (view: 'search' | 'advanced' | 'bookmarks' | 'counsel') => void;
+  activeView: 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference';
+  onViewChange: (view: 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference') => void;
   onHelpClick: () => void;
   bookmarksCount: number;
 }
@@ -53,6 +53,8 @@ export function Layout({
             onViewChange('bookmarks');
           } else if (nextEvent.key === 'c') {
             onViewChange('counsel');
+          } else if (nextEvent.key === 'r') {
+            onViewChange('reference');
           }
           window.removeEventListener('keydown', nextKeyHandler);
         };
@@ -131,6 +133,16 @@ export function Layout({
             >
               <Heart className="h-4 w-4" />
               <span className="hidden sm:inline font-display text-xs font-semibold">Counsel</span>
+            </Button>
+
+            <Button
+              variant={activeView === 'reference' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => onViewChange('reference')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline font-display text-xs font-semibold">Guides</span>
             </Button>
 
             <Button

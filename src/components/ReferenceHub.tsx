@@ -4,18 +4,23 @@ import { DIVINE_NAMES } from '../data/divineNames';
 import { PROPHETS } from '../data/prophets';
 import { SAHABAS } from '../data/sahabas';
 import { SAHABIYAT } from '../data/sahabiyat';
-import { ANGELS, JANNAH_GARDENS, JANNAH_GATES, JAHANNAM_LEVELS, MINOR_SIGNS, MAJOR_SIGNS, QIYAMAH_STAGES } from '../data/cosmology';
+import { ANGELS, JANNAH_GARDENS, JANNAH_GATES, JAHANNAM_LEVELS, MINOR_SIGNS, MAJOR_SIGNS, QIYAMAH_STAGES, REVEALED_BOOKS, PILLARS_OF_ISLAM, ARTICLES_OF_FAITH } from '../data/cosmology';
+import { DAILY_ADHKAR, DUA_ETIQUETTES, DUA_ACCEPTANCE_TIMES, DESTRUCTIVE_SINS, SAJDAH_VERSES } from '../data/worship';
 
 export function ReferenceHub() {
-  const [activeTab, setActiveTab] = React.useState<'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology'>('names');
+  const [activeTab, setActiveTab] = React.useState<'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology' | 'worship'>('names');
   const [namesSearch, setNamesSearch] = React.useState('');
   const [prophetsSearch, setProphetsSearch] = React.useState('');
   const [sahabasSearch, setSahabasSearch] = React.useState('');
   const [sahabiyatSearch, setSahabiyatSearch] = React.useState('');
   const [cosmologySearch, setCosmologySearch] = React.useState('');
-  const [cosmologySubTab, setCosmologySubTab] = React.useState<'angels' | 'jannah' | 'jahannam' | 'qiyamah'>('angels');
+  const [worshipSearch, setWorshipSearch] = React.useState('');
+  const [cosmologySubTab, setCosmologySubTab] = React.useState<'angels' | 'jannah' | 'jahannam' | 'qiyamah' | 'books' | 'creed'>('angels');
+  const [worshipSubTab, setWorshipSubTab] = React.useState<'adhkar' | 'dua' | 'sajdah' | 'sins'>('adhkar');
   const [qiyamahCategory, setQiyamahCategory] = React.useState<'minor' | 'major' | 'stages'>('minor');
   const [jannahCategory, setJannahCategory] = React.useState<'gates' | 'gardens'>('gates');
+  const [duaCategory, setDuaCategory] = React.useState<'etiquettes' | 'times'>('etiquettes');
+  const [showOnlyPromised, setShowOnlyPromised] = React.useState(false);
   const [expandedProphetNum, setExpandedProphetNum] = React.useState<number | null>(null);
   const [expandedSahabaId, setExpandedSahabaId] = React.useState<string | null>(null);
   const [expandedSahabiyahId, setExpandedSahabiyahId] = React.useState<string | null>(null);
@@ -49,8 +54,12 @@ export function ReferenceHub() {
   // Filter Sahabas
   const filteredSahabas = React.useMemo(() => {
     const query = sahabasSearch.toLowerCase().trim();
-    if (!query) return SAHABAS;
-    return SAHABAS.filter(
+    let list = SAHABAS;
+    if (showOnlyPromised) {
+      list = list.filter((s) => s.isPromisedParadise);
+    }
+    if (!query) return list;
+    return list.filter(
       (s) =>
         s.name.toLowerCase().includes(query) ||
         s.title.toLowerCase().includes(query) ||
@@ -58,7 +67,7 @@ export function ReferenceHub() {
         s.role.toLowerCase().includes(query) ||
         s.majorBattles.some((b) => b.toLowerCase().includes(query))
     );
-  }, [sahabasSearch]);
+  }, [sahabasSearch, showOnlyPromised]);
 
   // Filter Sahabiyat
   const filteredSahabiyat = React.useMemo(() => {
@@ -129,6 +138,92 @@ export function ReferenceHub() {
     );
   }, [cosmologySearch]);
 
+  // Filter Revealed Books
+  const filteredBooks = React.useMemo(() => {
+    const query = cosmologySearch.toLowerCase().trim();
+    if (!query) return REVEALED_BOOKS;
+    return REVEALED_BOOKS.filter(
+      (b) =>
+        b.name.toLowerCase().includes(query) ||
+        b.prophet.toLowerCase().includes(query) ||
+        b.description.toLowerCase().includes(query) ||
+        b.mustKnowFact.toLowerCase().includes(query) ||
+        b.arabicName.includes(query)
+    );
+  }, [cosmologySearch]);
+
+  // Filter Pillars & Articles (Creed)
+  const filteredPillars = React.useMemo(() => {
+    const query = cosmologySearch.toLowerCase().trim();
+    const items = [...PILLARS_OF_ISLAM, ...ARTICLES_OF_FAITH];
+    if (!query) return items;
+    return items.filter(
+      (i) =>
+        i.title.toLowerCase().includes(query) ||
+        i.meaning.toLowerCase().includes(query) ||
+        i.description.toLowerCase().includes(query) ||
+        i.mustKnowFact.toLowerCase().includes(query) ||
+        i.arabicName.includes(query)
+    );
+  }, [cosmologySearch]);
+
+  // Filter Adhkar
+  const filteredAdhkar = React.useMemo(() => {
+    const query = worshipSearch.toLowerCase().trim();
+    if (!query) return DAILY_ADHKAR;
+    return DAILY_ADHKAR.filter(
+      (a) =>
+        a.phrase.toLowerCase().includes(query) ||
+        a.meaning.toLowerCase().includes(query) ||
+        a.reward.toLowerCase().includes(query) ||
+        a.arabic.includes(query)
+    );
+  }, [worshipSearch]);
+
+  // Filter Du'a Etiquettes & Times
+  const filteredDuaEtiquettes = React.useMemo(() => {
+    const query = worshipSearch.toLowerCase().trim();
+    if (!query) return DUA_ETIQUETTES;
+    return DUA_ETIQUETTES.filter(
+      (e) =>
+        e.title.toLowerCase().includes(query) ||
+        e.description.toLowerCase().includes(query)
+    );
+  }, [worshipSearch]);
+
+  const filteredDuaTimes = React.useMemo(() => {
+    const query = worshipSearch.toLowerCase().trim();
+    if (!query) return DUA_ACCEPTANCE_TIMES;
+    return DUA_ACCEPTANCE_TIMES.filter(
+      (t) =>
+        t.title.toLowerCase().includes(query) ||
+        t.description.toLowerCase().includes(query)
+    );
+  }, [worshipSearch]);
+
+  // Filter Destructive Sins
+  const filteredSins = React.useMemo(() => {
+    const query = worshipSearch.toLowerCase().trim();
+    if (!query) return DESTRUCTIVE_SINS;
+    return DESTRUCTIVE_SINS.filter(
+      (s) =>
+        s.title.toLowerCase().includes(query) ||
+        s.warning.toLowerCase().includes(query) ||
+        s.arabicName.includes(query)
+    );
+  }, [worshipSearch]);
+
+  // Filter Sajdah Verses
+  const filteredSajdahVerses = React.useMemo(() => {
+    const query = worshipSearch.toLowerCase().trim();
+    if (!query) return SAJDAH_VERSES;
+    return SAJDAH_VERSES.filter(
+      (s) =>
+        s.surahName.toLowerCase().includes(query) ||
+        s.details.toLowerCase().includes(query)
+    );
+  }, [worshipSearch]);
+
   // Filter Minor Signs
   const filteredMinorSigns = React.useMemo(() => {
     const query = cosmologySearch.toLowerCase().trim();
@@ -171,10 +266,10 @@ export function ReferenceHub() {
   return (
     <div className="w-full space-y-6">
       {/* Top Toggle Selector Header */}
-      <div className="flex flex-wrap md:flex-row items-center justify-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-900/60 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 max-w-4xl mx-auto no-print">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-1.5 bg-slate-100 dark:bg-slate-900/60 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 max-w-5xl mx-auto no-print">
         <button
           onClick={() => setActiveTab('names')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             activeTab === 'names'
               ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -185,18 +280,18 @@ export function ReferenceHub() {
         </button>
         <button
           onClick={() => setActiveTab('prophets')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             activeTab === 'prophets'
               ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <BookOpen className="h-4 w-4 text-gold-500" />
-          <span>Prophets Guide</span>
+          <span>Prophets</span>
         </button>
         <button
           onClick={() => setActiveTab('sahabas')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             activeTab === 'sahabas'
               ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -207,7 +302,7 @@ export function ReferenceHub() {
         </button>
         <button
           onClick={() => setActiveTab('sahabiyat')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             activeTab === 'sahabiyat'
               ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -218,7 +313,7 @@ export function ReferenceHub() {
         </button>
         <button
           onClick={() => setActiveTab('cosmology')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
             activeTab === 'cosmology'
               ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
               : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -226,6 +321,17 @@ export function ReferenceHub() {
         >
           <ShieldAlert className="h-4 w-4 text-gold-500" />
           <span>Belief Guide</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('worship')}
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+            activeTab === 'worship'
+              ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-sm border border-slate-200/40 dark:border-gold-500/10'
+              : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <Heart className="h-4 w-4 text-gold-500" />
+          <span>Worship Guide</span>
         </button>
       </div>
 
@@ -448,15 +554,30 @@ export function ReferenceHub() {
       {/* VIEW 3: SAHABAS & WARRIORS */}
       {activeTab === 'sahabas' && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <div className="max-w-md mx-auto relative no-print">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
-            <input
-              type="text"
-              placeholder="Search Sahabas (e.g. 'Khalid', 'Siddiq', 'Yarmouk')..."
-              value={sahabasSearch}
-              onChange={(e) => setSahabasSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/40 bg-white/70 dark:bg-slate-900/60 focus:outline-hidden focus:ring-1 focus:ring-gold-500 dark:focus:ring-gold-500 text-sm placeholder-slate-400 dark:placeholder-slate-500"
-            />
+          <div className="max-w-md mx-auto space-y-3 no-print">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+              <input
+                type="text"
+                placeholder="Search Sahabas (e.g. 'Khalid', 'Siddiq', 'Yarmouk')..."
+                value={sahabasSearch}
+                onChange={(e) => setSahabasSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/40 bg-white/70 dark:bg-slate-900/60 focus:outline-hidden focus:ring-1 focus:ring-gold-500 dark:focus:ring-gold-500 text-sm placeholder-slate-400 dark:placeholder-slate-500"
+              />
+            </div>
+            
+            {/* Promised Jannah Toggle Checkbox */}
+            <div className="flex items-center justify-center gap-2">
+              <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={showOnlyPromised}
+                  onChange={(e) => setShowOnlyPromised(e.target.checked)}
+                  className="rounded border-slate-300 dark:border-slate-700 text-gold-500 focus:ring-gold-500 h-4 w-4 accent-gold-500 cursor-pointer"
+                />
+                <span>⭐ Show Promised Jannah Only (Al-Asharah)</span>
+              </label>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -489,6 +610,12 @@ export function ReferenceHub() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                      {sahaba.isPromisedParadise && (
+                        <span className="px-1.5 py-0.5 rounded-md bg-gold-500/15 border border-gold-500/20 text-[8px] font-bold font-display uppercase tracking-wider text-gold-600 dark:text-gold-400 flex items-center gap-0.5">
+                          ⭐ Promised Jannah
+                        </span>
+                      )}
+
                       <span className="text-xl font-bold font-amiri text-slate-700 dark:text-slate-300 mr-2 leading-none">
                         {sahaba.arabicName}
                       </span>
@@ -691,7 +818,7 @@ export function ReferenceHub() {
       {activeTab === 'cosmology' && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {/* Sub-tab selection row */}
-          <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2 max-w-md mx-auto p-1.5 bg-slate-100/80 dark:bg-slate-900/40 rounded-xl border border-slate-200/40 dark:border-slate-800/20 no-print">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-2 max-w-2xl mx-auto p-1.5 bg-slate-100/80 dark:bg-slate-900/40 rounded-xl border border-slate-200/40 dark:border-slate-800/20 no-print">
             <button
               onClick={() => { setCosmologySubTab('angels'); setCosmologySearch(''); }}
               className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
@@ -710,7 +837,7 @@ export function ReferenceHub() {
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              Jannah (8)
+              Jannah
             </button>
             <button
               onClick={() => { setCosmologySubTab('jahannam'); setCosmologySearch(''); }}
@@ -720,7 +847,7 @@ export function ReferenceHub() {
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              Jahannam (7)
+              Jahannam
             </button>
             <button
               onClick={() => { setCosmologySubTab('qiyamah'); setCosmologySearch(''); }}
@@ -731,6 +858,26 @@ export function ReferenceHub() {
               }`}
             >
               Last Day
+            </button>
+            <button
+              onClick={() => { setCosmologySubTab('books'); setCosmologySearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                cosmologySubTab === 'books'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              Books (Kutub)
+            </button>
+            <button
+              onClick={() => { setCosmologySubTab('creed'); setCosmologySearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                cosmologySubTab === 'creed'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              Creed
             </button>
           </div>
 
@@ -1193,6 +1340,408 @@ export function ReferenceHub() {
                 </div>
               </div>
             )}
+
+            {/* Sub-tab 5: Revealed Books (Kutub) */}
+            {cosmologySubTab === 'books' && (
+              <>
+                {filteredBooks.map((book) => (
+                  <div
+                    key={book.name}
+                    className="glass rounded-2xl border border-slate-200/50 dark:border-slate-800/40 p-4 sm:p-5 text-left space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <span className="h-7 w-7 rounded-full bg-amber-500/10 flex items-center justify-center text-xs font-bold text-amber-600 dark:text-amber-400">
+                          📖
+                        </span>
+                        <div>
+                          <h3 className="text-sm font-bold font-display text-slate-800 dark:text-slate-200">
+                            {book.name}
+                          </h3>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold font-display tracking-wide">
+                            Revealed to: {book.prophet}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-xl font-bold font-amiri text-slate-700 dark:text-slate-300 leading-none">
+                        {book.arabicName}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed font-sans">
+                      {book.description}
+                    </p>
+
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                      <BookOpen className="h-3.5 w-3.5 text-gold-500 shrink-0" />
+                      <span>Quranic Reference: <span className="text-slate-700 dark:text-slate-200">{book.scriptureRef}</span></span>
+                    </div>
+
+                    <div className="bg-amber-500/5 dark:bg-amber-500/2.5 border border-amber-500/10 p-3.5 rounded-xl">
+                      <h4 className="text-[10px] font-bold font-display uppercase tracking-widest text-amber-600 dark:text-amber-500 mb-1.5 flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+                        <span>Essential Must-Know Fact</span>
+                      </h4>
+                      <p className="text-xs text-slate-700 dark:text-slate-200 font-semibold leading-relaxed">
+                        {book.mustKnowFact}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {filteredBooks.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-sm text-slate-400 font-semibold">No revealed books match your search.</p>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Sub-tab 6: Creed Summary (Pillars & Articles) */}
+            {cosmologySubTab === 'creed' && (
+              <div className="space-y-6">
+                <div className="text-center max-w-md mx-auto px-2">
+                  <h3 className="text-xs font-bold font-display text-slate-800 dark:text-slate-200 mb-1">
+                    The Pillars of Islam & Articles of Faith (Iman)
+                  </h3>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold leading-relaxed">
+                    Islam consists of **5 external pillars of practice** and **6 internal articles of belief** that form the foundation of a Muslim's life.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Pillars of Islam Column */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-200/50 dark:border-slate-800/40 pb-2 flex items-center gap-2">
+                      <Award className="h-4 w-4 text-emerald-500" />
+                      <span>The 5 Pillars of Islam (Action)</span>
+                    </h3>
+                    {filteredPillars.filter(i => PILLARS_OF_ISLAM.some(p => p.title === i.title)).map((item) => (
+                      <div
+                        key={item.title}
+                        className="glass rounded-xl border border-slate-200/40 dark:border-slate-800/30 p-4 text-left space-y-2.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            {item.title}
+                          </h4>
+                          <span className="text-sm font-bold font-amiri text-slate-500 dark:text-slate-400">
+                            {item.arabicName}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+                          {item.description}
+                        </p>
+                        <div className="bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded-lg text-[11px] text-slate-600 dark:text-slate-300 font-semibold leading-normal">
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400 block mb-0.5 text-[9px] uppercase tracking-wider">Must-Know Fact:</span>
+                          {item.mustKnowFact}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Articles of Faith Column */}
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-200/50 dark:border-slate-800/40 pb-2 flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-gold-500" />
+                      <span>The 6 Articles of Faith (Iman)</span>
+                    </h3>
+                    {filteredPillars.filter(i => ARTICLES_OF_FAITH.some(a => a.title === i.title)).map((item) => (
+                      <div
+                        key={item.title}
+                        className="glass rounded-xl border border-slate-200/40 dark:border-slate-800/30 p-4 text-left space-y-2.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            {item.title}
+                          </h4>
+                          <span className="text-sm font-bold font-amiri text-slate-500 dark:text-slate-400">
+                            {item.arabicName}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+                          {item.description}
+                        </p>
+                        <div className="bg-gold-500/5 border border-gold-500/10 p-2.5 rounded-lg text-[11px] text-slate-600 dark:text-slate-300 font-semibold leading-normal">
+                          <span className="font-bold text-gold-600 dark:text-gold-400 block mb-0.5 text-[9px] uppercase tracking-wider">Must-Know Fact:</span>
+                          {item.mustKnowFact}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 6: WORSHIP GUIDE (DAILY ADHKAR, DUA, SAJDAH, SINS) */}
+      {activeTab === 'worship' && (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {/* Sub-tab selection row */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-2 max-w-2xl mx-auto p-1.5 bg-slate-100/80 dark:bg-slate-900/40 rounded-xl border border-slate-200/40 dark:border-slate-800/20 no-print">
+            <button
+              onClick={() => { setWorshipSubTab('adhkar'); setWorshipSearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                worshipSubTab === 'adhkar'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              Daily Adhkar
+            </button>
+            <button
+              onClick={() => { setWorshipSubTab('dua'); setWorshipSearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                worshipSubTab === 'dua'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              Du'a Guide
+            </button>
+            <button
+              onClick={() => { setWorshipSubTab('sajdah'); setWorshipSearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                worshipSubTab === 'sajdah'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              Sajdah Verses
+            </button>
+            <button
+              onClick={() => { setWorshipSubTab('sins'); setWorshipSearch(''); }}
+              className={`py-2 px-3 rounded-lg text-xs font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                worshipSubTab === 'sins'
+                  ? 'bg-white dark:bg-[#1f1910] text-gold-600 dark:text-gold-500 shadow-xs'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              7 Major Sins
+            </button>
+          </div>
+
+          {/* Search bar */}
+          <div className="max-w-md mx-auto relative no-print">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <input
+              type="text"
+              placeholder={`Search ${worshipSubTab === 'adhkar' ? 'Adhkar' : worshipSubTab === 'dua' ? 'Du\'a Guide' : worshipSubTab === 'sajdah' ? 'Sajdah Verses' : 'Major Sins'}...`}
+              value={worshipSearch}
+              onChange={(e) => setWorshipSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/40 bg-white/70 dark:bg-slate-900/60 focus:outline-hidden focus:ring-1 focus:ring-gold-500 dark:focus:ring-gold-500 text-sm placeholder-slate-400 dark:placeholder-slate-500"
+            />
+          </div>
+
+          {/* Render sub-tab content */}
+          <div className="grid grid-cols-1 gap-4">
+            
+            {/* 1. Daily Adhkar */}
+            {worshipSubTab === 'adhkar' && (
+              <>
+                {filteredAdhkar.map((item) => (
+                  <div
+                    key={item.phrase}
+                    className="glass rounded-2xl border border-slate-200/50 dark:border-slate-800/40 p-4 sm:p-5 text-left space-y-3"
+                  >
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+                      <h3 className="text-xs font-bold font-display text-slate-800 dark:text-slate-200">
+                        {item.phrase}
+                      </h3>
+                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 font-semibold shrink-0">
+                        Hadith
+                      </span>
+                    </div>
+
+                    <div className="p-3 bg-slate-50/50 dark:bg-slate-900/40 rounded-xl border border-slate-200/20 dark:border-slate-800/20">
+                      <p className="text-xl font-bold font-amiri text-slate-800 dark:text-slate-200 leading-loose text-center py-2 animate-in fade-in duration-300">
+                        {item.arabic}
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold italic text-center border-t border-slate-100 dark:border-slate-800 pt-2">
+                        {item.meaning}
+                      </p>
+                    </div>
+
+                    <div className="bg-amber-500/5 dark:bg-amber-500/2.5 border border-amber-500/10 p-3.5 rounded-xl">
+                      <h4 className="text-[10px] font-bold font-display uppercase tracking-widest text-amber-600 dark:text-amber-500 mb-1 flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
+                        <span>Immense Reward & Status</span>
+                      </h4>
+                      <p className="text-xs text-slate-700 dark:text-slate-200 font-semibold leading-relaxed">
+                        {item.reward}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {filteredAdhkar.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-sm text-slate-400 font-semibold">No Adhkar match your search.</p>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* 2. Du'a Guide */}
+            {worshipSubTab === 'dua' && (
+              <div className="space-y-6">
+                {/* Switcher for Etiquettes / Times */}
+                <div className="flex justify-center gap-1.5 p-1 bg-slate-200/50 dark:bg-slate-800/30 rounded-xl border border-slate-200/20 dark:border-slate-700/20 max-w-xs mx-auto no-print">
+                  <button
+                    onClick={() => setDuaCategory('etiquettes')}
+                    className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                      duaCategory === 'etiquettes'
+                        ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    }`}
+                  >
+                    6 Etiquettes of Du'a
+                  </button>
+                  <button
+                    onClick={() => setDuaCategory('times')}
+                    className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                      duaCategory === 'times'
+                        ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    }`}
+                  >
+                    Acceptance Times
+                  </button>
+                </div>
+
+                {duaCategory === 'etiquettes' ? (
+                  <div className="space-y-4">
+                    {filteredDuaEtiquettes.map((item) => (
+                      <div
+                        key={item.step}
+                        className="glass rounded-xl border border-slate-200/40 dark:border-slate-800/30 p-4 text-left flex items-start gap-3"
+                      >
+                        <span className="h-6 w-6 rounded-full bg-gold-500/15 border border-gold-500/20 text-gold-600 dark:text-gold-400 font-bold flex items-center justify-center text-xs shrink-0 mt-0.5">
+                          {item.step}
+                        </span>
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-0.5">
+                            {item.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredDuaTimes.map((item) => (
+                      <div
+                        key={item.title}
+                        className="glass rounded-xl border border-slate-200/40 dark:border-slate-800/30 p-4 text-left space-y-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs">🤲</span>
+                          <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            {item.title}
+                          </h4>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed font-sans">
+                          {item.description}
+                        </p>
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">
+                          Source: {item.source}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 3. Sajdah Verses */}
+            {worshipSubTab === 'sajdah' && (
+              <div className="space-y-4">
+                {/* Sajdah recitation Du'a instruction block */}
+                <div className="bg-gold-500/5 border border-gold-500/10 p-4 rounded-2xl text-left space-y-2">
+                  <h3 className="text-xs font-bold font-display text-gold-600 dark:text-gold-400 flex items-center gap-1.5">
+                    <Sparkles className="h-4 w-4" />
+                    <span>How to Perform Sajdah Tilawah (Recitation Prostration)</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold leading-relaxed font-sans">
+                    When reciting or hearing a Sajdah verse, say *Allahu Akbar* (without raising hands), prostrate once, recite the supplication below (or standard Sajdah praises), then raise your head saying *Allahu Akbar*. Wudu is recommended.
+                  </p>
+                  <div className="bg-white/60 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40 text-center space-y-1.5">
+                    <p className="text-sm font-bold font-amiri text-slate-800 dark:text-slate-200">
+                      سَجَدَ وَجْهِي لِلَّذِي خَلَقَهُ، وَشَقَّ سَمْعَهُ وَبَصَرَهُ بِحَوْلِهِ وَقُوَّتِهِ، فَتَبَارَكَ اللَّهُ أَحْسَنُ الْخَالِقِينَ
+                    </p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold italic">
+                      "My face has prostrated to the One Who created it and opened its hearing and sight by His might and power..."
+                    </p>
+                  </div>
+                </div>
+
+                {filteredSajdahVerses.map((item) => (
+                  <div
+                    key={item.number}
+                    className="glass rounded-2xl border border-slate-200/50 dark:border-slate-800/40 p-4 sm:p-5 text-left space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="h-6 w-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 dark:text-slate-400 flex items-center justify-center">
+                          {item.number}
+                        </span>
+                        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          Surah {item.surahName} (Chapter {item.surahNumber}, Verse {item.verseNumber})
+                        </h4>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md bg-gold-500/10 text-gold-600 dark:text-gold-400 border border-gold-500/15 text-[8px] font-bold font-display uppercase tracking-widest">
+                        Sajdah Verse
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold leading-relaxed border-t border-slate-100 dark:border-slate-800/40 pt-2 font-sans">
+                      {item.details}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 4. Destructive Sins */}
+            {worshipSubTab === 'sins' && (
+              <>
+                {filteredSins.map((item) => (
+                  <div
+                    key={item.number}
+                    className="glass rounded-2xl border border-red-500/20 dark:border-red-500/10 p-4 sm:p-5 text-left space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="h-7 w-7 rounded-full bg-red-500/10 flex items-center justify-center text-xs font-bold text-red-600 dark:text-red-400">
+                          {item.number}
+                        </span>
+                        <h3 className="text-sm font-bold font-display text-slate-800 dark:text-slate-200">
+                          {item.title}
+                        </h3>
+                      </div>
+                      <span className="text-lg font-bold font-amiri text-red-600 dark:text-red-400 leading-none">
+                        {item.arabicName}
+                      </span>
+                    </div>
+
+                    <div className="bg-red-500/5 border border-red-500/10 p-3.5 rounded-xl space-y-1">
+                      <span className="text-[9px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest block">Critical Warning & Description:</span>
+                      <p className="text-xs text-slate-700 dark:text-slate-200 font-semibold leading-relaxed font-sans">
+                        {item.warning}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-semibold">
+                      <BookOpen className="h-3.5 w-3.5 text-gold-500 shrink-0" />
+                      <span>Scriptural Basis: <span className="text-slate-700 dark:text-slate-200">{item.source}</span></span>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
           </div>
         </div>
       )}

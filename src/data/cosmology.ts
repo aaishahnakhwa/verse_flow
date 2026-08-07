@@ -30,6 +30,23 @@ export interface JudgementEvent {
   scriptureRef: string;
 }
 
+export interface RevealedBook {
+  name: string;
+  arabicName: string;
+  prophet: string;
+  scriptureRef: string;
+  description: string;
+  mustKnowFact: string;
+}
+
+export interface CreedItem {
+  title: string;
+  arabicName: string;
+  meaning: string;
+  description: string;
+  mustKnowFact: string;
+}
+
 export const ANGELS: Angel[] = [
   {
     name: "Jibreel (Gabriel) (AS)",
@@ -418,5 +435,131 @@ export const QIYAMAH_STAGES: JudgementEvent[] = [
     description: "A physical bridge set up over the abyss of Hellfire, leading to the entrance of Jannah.",
     mustKnowFact: "It is described as thinner than a single strand of hair and sharper than a sword, lined with iron hooks and thorns (Kalaaleeb) catching people based on their sins. Believers will cross at speeds matching their deeds (like lightning, wind, or crawling). The disbelievers will fall into the fire.",
     scriptureRef: "Sahih al-Bukhari"
+  }
+];
+
+export const REVEALED_BOOKS: RevealedBook[] = [
+  {
+    name: "Suhuf Ibrahim (Scrolls of Abraham)",
+    arabicName: "صُحُفُ إِبْرَاهِيمَ",
+    prophet: "Ibrahim (Abraham) (AS)",
+    scriptureRef: "Surah Al-A'la (87:19)",
+    description: "The scrolls revealed to Prophet Ibrahim (AS) containing basic moral laws, wisdom, and reflections.",
+    mustKnowFact: "Muslims believe these scrolls are now entirely lost and no physical copy survived. Their presence is documented in the Quran to remind us of the continuity of monotheism."
+  },
+  {
+    name: "Tawrat (The Torah)",
+    arabicName: "التَّوْرَاةُ",
+    prophet: "Musa (Moses) (AS)",
+    scriptureRef: "Surah Al-Ma'idah (5:44)",
+    description: "The primary lawbook and scripture revealed to Prophet Musa (AS) to guide the Children of Israel.",
+    mustKnowFact: "Muslims believe the original Torah was the direct, unadulterated word of Allah. However, the text currently known as the Torah/Old Testament has been subject to human edits, translations, and missing segments. Only the Quran remains guarded."
+  },
+  {
+    name: "Zabur (The Psalms)",
+    arabicName: "الزَّبُورُ",
+    prophet: "Dawud (David) (AS)",
+    scriptureRef: "Surah Al-Isra (17:55)",
+    description: "A collection of beautiful hymns, prayers, and praises of Allah revealed to Prophet Dawud (AS).",
+    mustKnowFact: "The Zabur did not introduce a new legal framework; instead, it served as a book of spiritual melodies and praises of Allah, sung by Dawud (AS) in his beautiful voice."
+  },
+  {
+    name: "Injeel (The Gospel)",
+    arabicName: "الْإِنْجِيلُ",
+    prophet: "Isa (Jesus) (AS)",
+    scriptureRef: "Surah Al-Ma'idah (5:46)",
+    description: "The scripture revealed to Prophet Isa (AS) to confirm the Torah, bring ease in certain laws, and preach love, mercy, and monotheism.",
+    mustKnowFact: "The original Injeel refers to the direct words revealed to Isa (AS) himself. The modern New Testament Gospels (Matthew, Mark, Luke, John) are biographies written decades later by men and do not represent the original uncorrupted Injeel."
+  },
+  {
+    name: "Al-Quran al-Kareem",
+    arabicName: "الْقُرْآنُ الْكَرِيمُ",
+    prophet: "Muhammad (SAW)",
+    scriptureRef: "Surah Al-Hijr (15:9)",
+    description: "The final, ultimate testament and miracle revealed to Prophet Muhammad (SAW) over 23 years. The literal, eternal word of Allah.",
+    mustKnowFact: "It is the only divine scripture that is physically and textually identical to the day it was revealed. Allah took the responsibility of protecting it Himself: 'Indeed, it is We who sent down the Quran and indeed, We will be its guardian.'"
+  }
+];
+
+export const PILLARS_OF_ISLAM: CreedItem[] = [
+  {
+    title: "Shahadah (Declaration of Faith)",
+    arabicName: "الشَّهَادَةُ",
+    meaning: "Bearing witness to monotheism",
+    description: "Believing and reciting with absolute conviction: 'La ilaha illa Allah, Muhammadun Rasul Allah' (There is no deity worthy of worship except Allah, and Muhammad is His Messenger).",
+    mustKnowFact: "This declaration is the entry key to Islam. Believing it is the absolute foundation of all deeds; without it, no actions are accepted."
+  },
+  {
+    title: "Salah (The 5 Daily Prayers)",
+    arabicName: "الصَّلَاةُ",
+    meaning: "Establishing daily connection",
+    description: "Performing the 5 obligatory prayers (Fajr, Dhuhr, Asr, Maghrib, Isha) at their designated times, facing the Kaaba in Mecca.",
+    mustKnowFact: "Salah is the second pillar. The Prophet (SAW) described it as the 'pillar of the religion'. It acts as a daily spiritual shield keeping the believer away from immorality."
+  },
+  {
+    title: "Zakat (Obligatory Almsgiving)",
+    arabicName: "الزَّكَاةُ",
+    meaning: "Purification of wealth",
+    description: "Paying an annual charity of 2.5% of accumulated savings/possessions to the poor once wealth exceeds a minimum threshold (Nisab) for a full lunar year.",
+    mustKnowFact: "Zakat literally means 'to purify' or 'to grow'. It is not a favor to the poor, but their divine right over the wealthy, establishing economic balance in society."
+  },
+  {
+    title: "Sawm (Fasting Ramadan)",
+    arabicName: "الصَّوْمُ",
+    meaning: "Fasting during the holy month",
+    description: "Abstaining completely from food, drink, smoking, and marital relations from dawn (Fajr) to sunset (Maghrib) during the month of Ramadan.",
+    mustKnowFact: "Fasting teaches self-control, empathy for the hungry, and heightens consciousness of Allah (Taqwa). The reward of fasting is so special that Allah said: 'It is for Me, and I will reward it.'"
+  },
+  {
+    title: "Hajj (Pilgrimage to Mecca)",
+    arabicName: "الْحَجُّ",
+    meaning: "The lifetime journey",
+    description: "Traveling to Mecca to perform specific rites (Tawaf, Sa'ee, standing at Arafat) once in a lifetime, obligatory only for those who are physically and financially capable.",
+    mustKnowFact: "A properly completed Hajj wipes clean all of a person's past sins. The Prophet (SAW) said: 'He who performs Hajj... returns as sinless as the day his mother gave birth to him.'"
+  }
+];
+
+export const ARTICLES_OF_FAITH: CreedItem[] = [
+  {
+    title: "Belief in Allah (Tawhid)",
+    arabicName: "إِيمَانٌ بِاللَّهِ",
+    meaning: "Oneness of the Creator",
+    description: "Believing in His absolute Oneness, His Lordship, His sole right to be worshiped, and His beautiful Names and Attributes without distortion.",
+    mustKnowFact: "This is the absolute core of Islam (Tawhid). It rejects all forms of polytheism, idol worship, or associating intermediaries between creation and the Creator."
+  },
+  {
+    title: "Belief in His Angels (Malaikah)",
+    arabicName: "إِيمَانٌ بِالْمَلَائِكَةِ",
+    meaning: "Belief in the unseen creation of light",
+    description: "Believing in the angels created from light who possess no free will and carry out Allah's commands with absolute obedience.",
+    mustKnowFact: "Angels are a part of the unseen realm (Ghayb). They perform critical cosmic functions, write our deeds, protect us, and pray for the believers."
+  },
+  {
+    title: "Belief in His Revealed Books (Kutub)",
+    arabicName: "إِيمَانٌ بِالْكُتُبِ",
+    meaning: "Belief in divine scriptures",
+    description: "Believing in all original scriptures sent down by Allah to guide humanity, culminating in the Holy Quran.",
+    mustKnowFact: "A Muslim must believe in all books originally sent by Allah, but must follow and implement strictly the final protected copy: the Quran."
+  },
+  {
+    title: "Belief in His Messengers (Rusul)",
+    arabicName: "إِيمَانٌ بِالرُّسُلِ",
+    meaning: "Belief in the prophets",
+    description: "Believing in all messengers sent by Allah to teach humanity monotheism, starting from Adam (AS) to the seal Muhammad (SAW).",
+    mustKnowFact: "We make no distinction between the messengers in their prophet status. To deny a single prophet is to deny all of them."
+  },
+  {
+    title: "Belief in the Day of Judgment (Yawm al-Qiyamah)",
+    arabicName: "إِيمَانٌ بِالْيَوْمِ الْآخِرِ",
+    meaning: "Belief in the Last Day",
+    description: "Believing in the end of the universe, physical resurrection, reckoning, scales of justice, bridge of Sirat, and the eternal abode of Jannah or Jahannam.",
+    mustKnowFact: "This belief establishes absolute accountability. It reassures the oppressed that justice will be served, and keeps the believer focused on eternal success rather than worldly gains."
+  },
+  {
+    title: "Belief in Divine Decree (Qadr)",
+    arabicName: "إِيمَانٌ بِالْقَدَرِ",
+    meaning: "Belief in Destiny",
+    description: "Believing that everything—both good and bad—occurs by Allah's absolute pre-knowledge, His writing in the Preserved Tablet (Lauh al-Mahfuz), His permission, and His creation.",
+    mustKnowFact: "Belief in Qadr brings ultimate mental peace. When calamity strikes, a Muslim says: 'QaddarAllahu wa ma sha'a fa'ala' (Allah has decreed, and what He wills, He does), protecting them from despair."
   }
 ];

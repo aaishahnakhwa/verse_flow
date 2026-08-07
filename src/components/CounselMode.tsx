@@ -448,22 +448,7 @@ export function CounselMode({
             </div>
 
             {showSettings && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 animate-in slide-in-from-top-1 duration-150">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    OpenRouter API Key
-                  </label>
-                  <input
-                    type="password"
-                    value={apiKey}
-                    onChange={(e) => {
-                      setApiKey(e.target.value);
-                      localStorage.setItem('openrouter_api_key', e.target.value);
-                    }}
-                    placeholder="Enter your OpenRouter key..."
-                    className="w-full h-10 px-3 rounded-lg bg-white dark:bg-[#161a22] border border-stone-200 dark:border-gold-500/25 text-xs text-slate-800 dark:text-gold-200 focus:outline-hidden focus:border-gold-500 font-mono"
-                  />
-                </div>
+              <div className="pt-1 animate-in slide-in-from-top-1 duration-150 max-w-xs">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     AI Language Model

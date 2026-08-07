@@ -118,12 +118,6 @@ export function CounselMode({
     e.preventDefault();
     if (!chatInput.trim() || isAiSending) return;
 
-    if (!apiKey.trim()) {
-      setErrorMsg('Please enter your OpenRouter API Key in the settings panel above to use Live AI Chat.');
-      setShowSettings(true);
-      return;
-    }
-
     const userText = chatInput.trim();
     setChatInput('');
     setErrorMsg('');
@@ -132,30 +126,48 @@ export function CounselMode({
     setChatMessages(newMessages);
     setIsAiSending(true);
 
+    const payloadMessages = [
+      {
+        role: 'system' as const,
+        content: 'You are an empathetic, wise, and highly knowledgeable AI Islamic Spiritual Counselor. Your goal is to help users find comfort, guidance, and peace by answering their questions and sharing relevant verses from the Quran, Hadiths, and stories of the prophets, sahabas, and sahabiyat. Keep your tone gentle, compassionate, and faithful. Use appropriate greetings (e.g., Salaam) and respect suffixes (e.g., SAW, AS, RA) where appropriate. Detect the language used by the user: if the user talks or asks questions in Hinglish (a mixture of Hindi and English written in Latin/English characters), you MUST respond in friendly, conversational Hinglish. Keep scriptural quotes and transliterations accurate, but explain and comfort them in the same Hinglish style. Format references clearly (e.g., **Surah Al-Baqarah 2:153**) so they stand out.'
+      },
+      ...newMessages
+    ];
+
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'HTTP-Referer': 'https://verseflow-counsel.ai',
-          'X-Title': 'VerseFlow Spiritual Counselor',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: aiModel,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an empathetic, wise, and highly knowledgeable AI Islamic Spiritual Counselor. Your goal is to help users find comfort, guidance, and peace by answering their questions and sharing relevant verses from the Quran, Hadiths, and stories of the prophets, sahabas, and sahabiyat. Keep your tone gentle, compassionate, and faithful. Use appropriate greetings (e.g., Salaam) and respect suffixes (e.g., SAW, AS, RA) where appropriate. Detect the language used by the user: if the user talks or asks questions in Hinglish (a mixture of Hindi and English written in Latin/English characters), you MUST respond in friendly, conversational Hinglish. Keep scriptural quotes and transliterations accurate, but explain and comfort them in the same Hinglish style. Format references clearly (e.g., **Surah Al-Baqarah 2:153**) so they stand out.'
-            },
-            ...newMessages
-          ]
-        })
-      });
+      let response;
+      if (apiKey.trim()) {
+        // Direct Client-Side call (using user-entered key)
+        response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': 'https://verseflow-counsel.ai',
+            'X-Title': 'VerseFlow Spiritual Counselor',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: aiModel,
+            messages: payloadMessages,
+          }),
+        });
+      } else {
+        // Secure Vercel Serverless Function call (hiding API key on server side)
+        response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: aiModel,
+            messages: payloadMessages,
+          }),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error?.message || `API Error: ${response.status}`);
+        throw new Error(errorData?.error?.message || errorData?.error || `API Error: ${response.status}`);
       }
 
       const data = await response.json();

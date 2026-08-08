@@ -7,7 +7,7 @@ import { searchEngine } from './search/searchEngine';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useDebounce } from './hooks/useDebounce';
 import { parseUrlParams, updateUrlParams } from './utils/share';
-import { getJuzForVerse } from './utils/juzMapper';
+import { getJuzForVerse, getSurahsForJuz } from './utils/juzMapper';
 
 import { Layout } from './components/Layout';
 import { SearchBox } from './components/SearchBox';
@@ -254,6 +254,15 @@ export default function App() {
     if (!loadedCollectionIds.has('quran')) return [];
     return searchEngine.getBooksForCollection('Quran');
   }, [loadedCollectionIds]);
+
+  const surahsInSelectedJuz = React.useMemo(() => {
+    if (!selectedJuz || availableSurahs.length === 0) return [];
+    const juzNum = parseInt(selectedJuz, 10);
+    return getSurahsForJuz(juzNum, availableSurahs).map(surahName => {
+      const chapterNum = availableSurahs.indexOf(surahName) + 1;
+      return { name: surahName, chapter: chapterNum };
+    });
+  }, [selectedJuz, availableSurahs]);
 
   const availableBooks = React.useMemo(() => {
     return [...availableHadithBooks, ...availableSurahs].sort();
@@ -593,6 +602,53 @@ export default function App() {
                             );
                           })}
                         </div>
+
+                        {/* Surahs inside the selected Juz */}
+                        {selectedJuz && surahsInSelectedJuz.length > 0 && (
+                          <div className="pt-4 border-t border-stone-200/40 dark:border-gold-500/10 space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="flex items-center justify-between px-1">
+                              <span className="text-[10px] font-bold font-display uppercase tracking-widest text-gold-600 dark:text-gold-400">
+                                📜 Surahs in Juz {selectedJuz}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                              {surahsInSelectedJuz.map((surah) => {
+                                const isSurahActive = selectedBook === surah.name;
+                                return (
+                                  <button
+                                    key={surah.chapter}
+                                    type="button"
+                                    onClick={() => {
+                                      const isActive = selectedBook === surah.name;
+                                      setSelectedBook(isActive ? '' : surah.name);
+                                      setLimit(50);
+                                    }}
+                                    className={`h-11 px-3.5 rounded-xl border transition-all flex items-center gap-2 cursor-pointer text-left group ${
+                                      isSurahActive
+                                        ? 'bg-gold-500 border-gold-500 text-[#11141a]'
+                                        : 'bg-white/60 dark:bg-[#161a22]/60 border-stone-200/60 dark:border-gold-500/10 text-slate-700 dark:text-stone-300 hover:bg-gold-500/5 hover:border-gold-500/40'
+                                    }`}
+                                  >
+                                    <span className={`h-6 w-6 rounded-lg flex items-center justify-center text-[10px] font-bold transition-colors shrink-0 ${
+                                      isSurahActive
+                                        ? 'bg-[#11141a]/15 text-[#11141a]'
+                                        : 'bg-stone-100 dark:bg-gold-500/10 text-slate-500 dark:text-gold-400 group-hover:bg-gold-500 group-hover:text-slate-950'
+                                    }`}>
+                                      {surah.chapter}
+                                    </span>
+                                    <span className={`text-xs font-bold truncate ${
+                                      isSurahActive
+                                        ? 'text-[#11141a]'
+                                        : 'text-slate-700 dark:text-stone-300'
+                                    }`}>
+                                      {surah.name}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 

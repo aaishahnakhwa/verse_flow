@@ -166,6 +166,9 @@ export function FilterPanel({
                       >
                         <option value="">All Surahs (114)</option>
                         {JUZ_RANGES.map((j) => {
+                          // Restrict Surahs list to the selected Juz if active
+                          if (selectedJuz && selectedJuz !== j.juzNum.toString()) return null;
+
                           const surahsInJuz = getSurahsForJuz(j.juzNum, availableSurahs);
                           if (surahsInJuz.length === 0) return null;
                           return (

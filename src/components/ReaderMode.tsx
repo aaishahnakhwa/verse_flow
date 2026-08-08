@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, ChevronRight, Copy, Check, Download } from 'lucide-react';
+import { X, BookOpen, ChevronRight, Copy, Check, Download, Loader2 } from 'lucide-react';
 import type { ScriptureEntry } from '../types/scripture';
 import { copyToClipboard } from '../utils/share';
 import { cn } from '../utils/cn';
@@ -42,6 +42,87 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
   const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
   const [isInfoExpanded, setIsInfoExpanded] = React.useState(false);
 
+  const fetchChapterExtra = React.useCallback(async (chapterNum: number) => {
+    Promise.resolve().then(() => {
+      setIsLoadingExtra(true);
+      setExtraError(false);
+    });
+    try {
+      // 1. Fetch Uthmani Arabic script for the entire Surah
+      const arRes = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${chapterNum}`);
+      if (!arRes.ok) throw new Error('Arabic fetch failed');
+      const arJson = await arRes.json();
+
+      // 2. Fetch English transliterations (translation ID 57) for the entire Surah
+      const trRes = await fetch(`https://api.quran.com/api/v4/quran/translations/57?chapter_number=${chapterNum}`);
+      if (!trRes.ok) throw new Error('Transliteration fetch failed');
+      const trJson = await trRes.json();
+
+      // 3. Fetch Roman Urdu (Hinglish) translations (translation ID 831) for the entire Surah
+      let roJson = { translations: [] };
+      try {
+        const roRes = await fetch(`https://api.quran.com/api/v4/quran/translations/831?chapter_number=${chapterNum}`);
+        if (roRes.ok) {
+          roJson = await roRes.json();
+        }
+      } catch (err) {
+        console.error('Failed to load Roman Urdu chapter translations:', err);
+      }
+
+      const dataMap: Record<string, { ar: string; tr: string; ro: string }> = {};
+
+      arJson.verses?.forEach((v: { verse_key: string; text_uthmani: string }) => {
+        dataMap[v.verse_key] = { ar: v.text_uthmani, tr: '', ro: '' };
+      });
+
+      trJson.translations?.forEach((t: { text: string }, idx: number) => {
+        const arVerse = arJson.verses?.[idx];
+        if (arVerse) {
+          const key = arVerse.verse_key;
+          if (dataMap[key]) {
+            dataMap[key].tr = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
+          }
+        }
+      });
+
+      roJson.translations?.forEach((t: { text: string }, idx: number) => {
+        const arVerse = arJson.verses?.[idx];
+        if (arVerse) {
+          const key = arVerse.verse_key;
+          if (dataMap[key]) {
+            dataMap[key].ro = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
+          }
+        }
+      });
+
+      setChapterData(dataMap);
+    } catch (err) {
+      console.error('Failed to load chapter extra data:', err);
+      setExtraError(true);
+    } finally {
+      setIsLoadingExtra(false);
+    }
+  }, []);
+
+  const fetchSurahInfo = React.useCallback(async (chapterNum: number) => {
+    Promise.resolve().then(() => {
+      setIsLoadingInfo(true);
+    });
+    try {
+      const res = await fetch(`https://api.quran.com/api/v4/chapters/${chapterNum}/info`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.chapter_info) {
+          setSurahInfo(json.chapter_info);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load Surah info:', err);
+    } finally {
+      setIsLoadingInfo(false);
+    }
+  }, []);
+
   // Pre-load Arabic script, English transliterations & Roman Urdu (Hinglish) for the entire Quran chapter on-demand
   React.useEffect(() => {
     if (!isOpen || !activeEntry || activeEntry.collection.toLowerCase() !== 'quran') {
@@ -53,87 +134,11 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
     }
 
     const chapterNum = activeEntry.chapter;
-
-    const fetchChapterExtra = async () => {
-      setIsLoadingExtra(true);
-      setExtraError(false);
-      try {
-        // 1. Fetch Uthmani Arabic script for the entire Surah
-        const arRes = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${chapterNum}`);
-        if (!arRes.ok) throw new Error('Arabic fetch failed');
-        const arJson = await arRes.json();
-
-        // 2. Fetch English transliterations (translation ID 57) for the entire Surah
-        const trRes = await fetch(`https://api.quran.com/api/v4/quran/translations/57?chapter_number=${chapterNum}`);
-        if (!trRes.ok) throw new Error('Transliteration fetch failed');
-        const trJson = await trRes.json();
-
-        // 3. Fetch Roman Urdu (Hinglish) translations (translation ID 831) for the entire Surah
-        let roJson = { translations: [] };
-        try {
-          const roRes = await fetch(`https://api.quran.com/api/v4/quran/translations/831?chapter_number=${chapterNum}`);
-          if (roRes.ok) {
-            roJson = await roRes.json();
-          }
-        } catch (err) {
-          console.error('Failed to load Roman Urdu chapter translations:', err);
-        }
-
-        const dataMap: Record<string, { ar: string; tr: string; ro: string }> = {};
-
-        arJson.verses?.forEach((v: { verse_key: string; text_uthmani: string }) => {
-          dataMap[v.verse_key] = { ar: v.text_uthmani, tr: '', ro: '' };
-        });
-
-        trJson.translations?.forEach((t: { text: string }, idx: number) => {
-          const arVerse = arJson.verses?.[idx];
-          if (arVerse) {
-            const key = arVerse.verse_key;
-            if (dataMap[key]) {
-              dataMap[key].tr = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
-            }
-          }
-        });
-
-        roJson.translations?.forEach((t: { text: string }, idx: number) => {
-          const arVerse = arJson.verses?.[idx];
-          if (arVerse) {
-            const key = arVerse.verse_key;
-            if (dataMap[key]) {
-              dataMap[key].ro = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
-            }
-          }
-        });
-
-        setChapterData(dataMap);
-      } catch (err) {
-        console.error('Failed to load chapter extra data:', err);
-        setExtraError(true);
-      } finally {
-        setIsLoadingExtra(false);
-      }
-    };
-
-    const fetchSurahInfo = async () => {
-      setIsLoadingInfo(true);
-      try {
-        const res = await fetch(`https://api.quran.com/api/v4/chapters/${chapterNum}/info`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.chapter_info) {
-            setSurahInfo(json.chapter_info);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load Surah info:', err);
-      } finally {
-        setIsLoadingInfo(false);
-      }
-    };
-
-    fetchChapterExtra();
-    fetchSurahInfo();
-  }, [isOpen, activeEntry]);
+    Promise.resolve().then(() => {
+      fetchChapterExtra(chapterNum);
+      fetchSurahInfo(chapterNum);
+    });
+  }, [isOpen, activeEntry, fetchChapterExtra, fetchSurahInfo]);
 
   const handleClose = () => {
     setIsInfoExpanded(false);
@@ -419,17 +424,32 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
                   </span>
                 )}
                 {extraError && (
-                  <span className="text-[10px] text-red-500 font-bold font-display uppercase tracking-wider mr-2 hidden sm:inline">
-                    Offline Fallback Active
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => activeEntry && fetchChapterExtra(activeEntry.chapter)}
+                    className="text-[10px] text-red-500 hover:text-red-600 font-bold font-display uppercase tracking-wider mr-2 underline cursor-pointer border-none bg-transparent"
+                    title="Retry syncing translations"
+                  >
+                    Sync Failed (Retry)
+                  </button>
                 )}
                 <button
                   onClick={handleDownloadHTML}
-                  className="h-9 px-3.5 rounded-xl flex items-center gap-1.5 border border-stone-200/50 dark:border-gold-500/20 hover:bg-stone-100 dark:hover:bg-gold-950/20 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-gold-400 font-display text-xs font-bold transition-colors cursor-pointer"
-                  title="Download Chapter as Offline Study Sheet"
+                  disabled={isLoadingExtra}
+                  className="h-9 px-3.5 rounded-xl flex items-center gap-1.5 border border-stone-200/50 dark:border-gold-500/20 hover:bg-stone-100 dark:hover:bg-gold-950/20 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-gold-400 font-display text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+                  title={isLoadingExtra ? "Syncing scripture translations..." : "Download Chapter as Offline Study Sheet"}
                 >
-                  <Download className="h-4 w-4" />
-                  <span>Download</span>
+                  {isLoadingExtra ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-gold-500" />
+                      <span>Syncing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4" />
+                      <span>Download</span>
+                    </>
+                  )}
                 </button>
                 <button
                   onClick={handleClose}

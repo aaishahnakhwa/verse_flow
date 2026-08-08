@@ -111,7 +111,11 @@ export const ResultCard = React.memo(function ResultCard({
                 Juz {getJuzForVerse(entry.chapter, entry.verse || 1)}
               </Badge>
             )}
-            <span className="text-[13px] font-bold text-slate-900 dark:text-gold-100 font-display uppercase tracking-wider">
+            <span
+              onClick={() => onReadContext?.(entry)}
+              className="text-[13px] font-bold text-slate-900 dark:text-gold-100 font-display uppercase tracking-wider cursor-pointer hover:text-gold-600 dark:hover:text-gold-400 hover:underline transition-colors"
+              title={entry.collection === 'Quran' ? 'Read full Surah' : 'Read full Book chapter'}
+            >
               {entry.reference}
             </span>
           </div>
@@ -132,7 +136,11 @@ export const ResultCard = React.memo(function ResultCard({
         </div>
 
         {/* Location info */}
-        <div className="text-xs text-slate-400 dark:text-slate-500 font-medium font-display mb-4">
+        <div
+          onClick={() => onReadContext?.(entry)}
+          className="text-xs text-slate-400 dark:text-slate-500 font-medium font-display mb-4 cursor-pointer hover:text-gold-600 dark:hover:text-gold-400 hover:underline transition-colors inline-block"
+          title={entry.collection === 'Quran' ? 'Read full Surah' : 'Read full Book chapter'}
+        >
           {headingDetails}
         </div>
 

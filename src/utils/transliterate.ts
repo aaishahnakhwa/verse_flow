@@ -9,253 +9,39 @@ export function normalizeUrduForLookup(w: string): string {
     .replace(/آ/g, 'ا');
 }
 
+import { TRANSLITERATE_DICT } from './transliterateDict';
+
 export function transliterateUrduToRoman(text: string): string {
   if (!text) return '';
 
-  // Raw dictionary definitions in standard Urdu script
-  const rawWordMap: Record<string, string> = {
-    // General connecting words
-    'اور': 'aur',
-    'ہے': 'hai',
-    'ہیں': 'hain',
-    'تھا': 'tha',
-    'تھی': 'thi',
-    'تھے': 'the',
-    'کا': 'ka',
-    'کی': 'ki',
-    'کے': 'ke',
-    'ko': 'ko',
-    'کو': 'ko',
-    'نے': 'ne',
-    'سے': 'se',
-    'پر': 'par',
-    'میں': 'mein',
-    'یہ': 'yeh',
-    'وہ': 'woh',
-    'وه': 'woh',
-    'بھی': 'bhi',
-    'تو': 'toh',
-    'کہ': 'keh',
-    'جو': 'jo',
-    'جس': 'jiss',
-    'سب': 'sab',
-    'ایک': 'ek',
-    'بندے': 'bande',
-    'کام': 'kaam',
-    'اپنے': 'apne',
-    'رب': 'rab',
-    'نام': 'naam',
-    'شروع': 'shuru',
-    'ہستی': 'hasti',
-    'تمام': 'tamam',
-    'خزانہ': 'khazana',
-    'مدد': 'madad',
-    'کامیابی': 'kamyabi',
-    'ضمانت': 'zamanat',
-    'بندگی': 'bandagi',
-    'ساتھ': 'saath',
-    'دونوں': 'donon',
-    'آنکھوں': 'aankhon',
-    'پیروں': 'pairon',
-    'ملک': 'mulk',
-    'دنیا': 'dunya',
-    'خدا': 'khuda',
-    'چیزیں': 'cheezein',
-    'زندگی': 'zindagi',
-    'کائنات': 'kainaat',
-    'شکر': 'shukr',
-    'انعام': 'inaam',
-    'سایہ': 'saaya',
-    'راستہ': 'raasta',
-    'سچا': 'sacha',
-    'توفیق': 'taufeeq',
-    'بقیہ': 'baqiya',
-    'تصویر': 'tasveer',
-    'لیے': 'liye',
-    'کسی': 'kisi',
-    'کرے': 'kare',
-    'رہتی': 'rehti',
-    'اس': 'iss',
-    'کرنا': 'karna',
-    'अपनी': 'apni',
-    'اپنی': 'apni',
-    'بے': 'be',
-    'मेरी': 'meri',
-    'میری': 'meri',
-    'میرے': 'mere',
-    'طرف': 'taraf',
-    'اسی': 'issi',
-    'کیونکہ': 'kyunki',
-    'ہر': 'har',
-    'وقت': 'waqt',
-    'لوگ': 'log',
-    'لوگوں': 'logon',
-    'بندوں': 'bandon',
-    'انسان': 'insaan',
-    'آج': 'aaj',
-    'کل': 'kal',
-    'نہ': 'na',
-    'یا': 'ya',
-    'مگر': 'magar',
-    'وہیں': 'wahin',
-
-    // Qiblah paragraph specific vocabulary
-    'قبلہ': 'qibla',
-    'تعلق': 'taalluq',
-    'مظاہر': 'mazaahir',
-    'عبادت': 'ibadat',
-    'حقیقت': 'haqeeqat',
-    'اصل': 'asal',
-    'مقصد': 'maqsad',
-    'تنظیم': 'tanzeem',
-    'عمومی': 'amoomi',
-    'رخ': 'rukh',
-    'تعین': "ta'ayyun",
-    'سمت': 'simt',
-    'مقرر': 'muqarrar',
-    'کردے': 'karde',
-    'وہی': 'wahi',
-    'پسندیدہ': 'pasandeeda',
-    'عبادتی': 'ibadati',
-    'خواه': 'khwah',
-    'خواہ': 'khwah',
-    'مشرق': 'mashriq',
-    'مغرب': 'maghrib',
-    'لمبی': 'lambi',
-    'مدت': 'muddat',
-    'بیت': 'Bait',
-    'المقدس': 'al-Muqaddas',
-    'وجہ': 'wajah',
-    'اول': 'awwal',
-    'تقدس': 'taqaddus',
-    'حاصل': 'haasil',
-    'ہوگیا': 'ho gaya',
-    'ہوگیا۔': 'ho gaya.',
-    'ہو گیا': 'ho gaya',
-    'چنانچہ': 'chunanche',
-    'ہجری': 'hijri',
-    'تبدیلی': 'tabdeeli',
-    'اعلان': 'ailaan',
-    'بہت': 'bohat',
-    'ذہن': 'zehan',
-    'مطابق': 'mutaabiq',
-    'بنانا': 'banana',
-    'مشکل': 'mushkil',
-    'ہوگیا۔آپ': 'ho gaya. Aap',
-    'مخالفت': 'mukhalifat',
-    'والے': 'waale',
-    'بہانہ': 'bahana',
-    'بنا': 'bana',
-    'کر': 'kar',
-    'خلاف': 'khilaaf',
-    'طرح': 'tarah',
-    'باتیں': 'baatein',
-    'پھیلانی': 'phailani',
-    'کیں': 'keen',
-    'ہمیشہ': 'hamesha',
-    'نبیوں': 'nabiyon',
-    'پھر': 'phir',
-    'کیوں': 'kyun',
-    'ظاہر': 'zaahir',
-    'تحریک': 'tehreek',
-    'یہود': 'yahood',
-    'زد': 'zad',
-    'چلائی': 'chalayi',
-    'جا': 'jaa',
-    'رہی': 'rahi',
-    'کوئی': 'koi',
-    'کہتا': 'kehta',
-    'مدعی': "mudda'ee",
-    'رسالت': 'risalat',
-    'خود': 'khud',
-    'مشن': 'mission',
-    'متحیر': 'mutahayyir',
-    'متردد': 'mutaraddid',
-    'کنفیوزڈ': 'confused',
-    'کبھی': 'kabhi',
-    'نماز': 'namaz',
-    'پڑھتے': 'padhte',
-    'رہے': 'rahe',
-    'ان': 'un',
-    'نمازیں': 'namazein',
-    'بےکار': 'bekaar',
-    'گئیں': 'gayin',
-    'وغیرہ': 'waghaira',
-    'سچے': 'sache',
-    'پرست': 'parast',
-    'ہوئے': 'hue',
-    'نہیں': 'nahin',
-    'سمجھنے': 'samajhne',
-    'دیر': 'deer',
-    'لگی': 'lagi',
-    'آجائے': 'aa jaye',
-    'روایت': 'riwayat',
-    'تقریباً': 'taqreeban',
-    'تقریبا': 'taqreeban',
-    'سترہ': 'satrah',
-    'ماہ': 'maah',
-    'بعد': 'baad',
-    'رسول': 'rasool',
-    'صلی': 'sallallahu',
-    'علیہ': 'alaihi',
-    'وسلم': 'wasallam',
-    'اصحاب': 'ashaab',
-    'جماعت': 'jamaat',
-    'مدینہ': 'Madinah',
-    'ادا': 'ada',
-    'کررہے': 'kar rahe',
-    'معلوم': 'maaloom',
-    'آپ': 'aap',
-    'مسلمانوں': 'musalmanon',
-    'عین': 'ain',
-    'حالت': 'haalat',
-    'کعبہ': 'Kaaba',
-    'یعنی': 'yaani',
-    'شمال': 'shimal',
-    'جنوب': 'junoob',
-    'حضرت': 'hazrat',
-    'موسی': 'musa',
-    'موسیٰ': 'musa',
-    'بنی': 'bani',
-    'اسرائیل': 'israil',
-    'قتل': 'qatl',
-    'ہوا': 'hua',
-    'پتہ': 'pata',
-    'لگانے': 'lagane',
-    'تعالی': "ta'ala",
-    'تعالیٰ': "ta'ala",
-    'نبی': 'nabi',
-    'واسطے': 'waaste',
-    'حکم': 'hukm',
-    'دیا': 'diya',
-    'گائے': 'gaaye',
-    'ذبح': 'zabah',
-    'کرو': 'karo',
-    'گوشت': 'gosht',
-    'مقتول': 'maqtool',
-    'مارو': 'maaro',
-    'قاتل': 'qaatil',
-    'بتادے': 'batade',
-    'معجزاتی': 'mujizati',
-    'تدبیر': 'tadbeer',
-    'چند': 'chand',
-    'مقاصد': 'maqaasid',
-    'اختیار': 'ikhtiyar',
-    'گئی': 'gayi',
-    'گئے': 'gaye',
-    'گیا': 'gaya',
-    'थी': 'thi',
-    'thi': 'thi',
-  };
-
   // Compile the normalized dictionary for O(1) matching
   const wordMap: Record<string, string> = {};
-  for (const k in rawWordMap) {
-    wordMap[normalizeUrduForLookup(k)] = rawWordMap[k];
+  for (const k in TRANSLITERATE_DICT) {
+    wordMap[normalizeUrduForLookup(k)] = TRANSLITERATE_DICT[k];
   }
 
-  // Pre-clean text: normalize spaces
-  const processed = text.replace(/\u2011/g, '-').replace(/\u00a0/g, ' ');
+  // Pre-clean text: normalize spaces and split glued words
+  let processed = text.replace(/\u2011/g, '-').replace(/\u00a0/g, ' ');
+
+  // Split commonly glued Urdu words (glued together without space in raw commentaries)
+  processed = processed
+    .replace(/کےلیے/g, ' کے لیے ')
+    .replace(/اٹھااور/g, ' اٹھا اور ')
+    .replace(/کیااور/g, ' کیا اور ')
+    .replace(/گیااور/g, ' گیا اور ')
+    .replace(/تھااور/g, ' था اور ')
+    .replace(/تھااور/g, ' تھا اور ')
+    .replace(/تھیاور/g, ' تھی اور ')
+    .replace(/تھےاور/g, ' تھے اور ')
+    .replace(/ہےاور/g, ' ہے اور ')
+    .replace(/ہیںاور/g, ' ہیں اور ')
+    // Space out numbers from Urdu words (e.g. 6ہجری -> 6 ہجری)
+    .replace(/(\d+)([\u0600-\u06FF]+)/g, '$1 $2')
+    .replace(/([\u0600-\u06FF]+)(\d+)/g, '$1 $2')
+    // Add spaces after Urdu punctuation marks (۔ ، ؟) if missing
+    .replace(/([۔،؟])([ابپتٹثجچحخدڈذرڑزژسشصضطظعغفقکگلمنوہیےآ])/g, '$1 $2')
+    // Remove extra spaces created
+    .replace(/\s+/g, ' ');
 
   // Split into words, replace known Urdu words, then map letter by letter for any leftovers
   const words = processed.split(/\s+/);
@@ -277,25 +63,89 @@ export function transliterateUrduToRoman(text: string): string {
       return prefix + wordMap[lookupKey] + punctuation;
     }
     
-    // Character by character mapping fallback for words not in the dictionary
-    const charMap: Record<string, string> = {
-      'ب': 'b', 'پ': 'p', 'ت': 't', 'ٹ': 't', 'ث': 's',
-      'ج': 'j', 'چ': 'ch', 'ح': 'h', 'خ': 'kh',
-      'د': 'd', 'ڈ': 'd', 'ذ': 'z',
-      'ر': 'r', 'ڑ': 'r', 'ز': 'z', 'ژ': 'zh',
-      'س': 's', 'ش': 'sh', 'ص': 's', 'ض': 'z',
-      'ط': 't', 'ظ': 'z',
-      'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'q',
-      'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n',
-      'و': 'o', 'ی': 'i', 'ے': 'e', 'ہ': 'h', 'ء': 'a',
-      'ا': 'a', 'ں': 'n', 'ھ': 'h'
-    };
-    
-    let roman = '';
-    for (let i = 0; i < cleanWord.length; i++) {
-      const char = cleanWord[i];
-      roman += charMap[char] || char;
+    // Smart syllabic phonetic transliteration fallback for words not in dictionary
+    const chars = Array.from(cleanWord);
+    const charList = chars.map((c, i) => {
+      const isLast = i === chars.length - 1;
+      const nextChar = chars[i + 1];
+      switch(c) {
+        case 'ب': return { val: 'b', type: 'C' };
+        case 'پ': return { val: 'p', type: 'C' };
+        case 'ت': case 'ط': case 'ٹ': return { val: 't', type: 'C' };
+        case 'ث': case 'س': case 'ص': return { val: 's', type: 'C' };
+        case 'ج': return { val: 'j', type: 'C' };
+        case 'چ': return { val: 'ch', type: 'C' };
+        case 'ح': return { val: 'h', type: 'C' }; // Soft h
+        case 'خ': return { val: 'kh', type: 'C' }; // Hard kh
+        case 'د': case 'ڈ': return { val: 'd', type: 'C' };
+        case 'ذ': case 'ز': case 'ض': case 'ظ': return { val: 'z', type: 'C' };
+        case 'ر': case 'ڑ': return { val: 'r', type: 'C' };
+        case 'ش': return { val: 'sh', type: 'C' };
+        case 'ع': return { val: 'a', type: 'V' };
+        case 'غ': return { val: 'gh', type: 'C' };
+        case 'ف': return { val: 'f', type: 'C' };
+        case 'ق': return { val: 'q', type: 'C' };
+        case 'ک': return { val: 'k', type: 'C' };
+        case 'گ': return { val: 'g', type: 'C' };
+        case 'ل': return { val: 'l', type: 'C' };
+        case 'م': return { val: 'm', type: 'C' };
+        case 'ن': return { val: 'n', type: 'C' };
+        case 'و': 
+          // If 'و' is followed by 'ہ' at the end of the word, it's a consonant 'w' (e.g., ghazwa, jalwa)
+          if (nextChar === 'ہ' && i === chars.length - 2) {
+            return { val: 'w', type: 'C' };
+          }
+          // If first letter: 'w' (consonant). If last: 'o' (vowel). In middle: 'oo' (vowel).
+          return { val: i === 0 ? 'w' : (isLast ? 'o' : 'oo'), type: i === 0 ? 'C' : 'V' };
+        case 'ی': 
+          // If last letter: 'i' (vowel). In middle: 'ee' (vowel).
+          return { val: isLast ? 'i' : 'ee', type: 'V' };
+        case 'ے': return { val: 'e', type: 'V' };
+        case 'ہ': case 'ھ': 
+          // If last letter: 'a' (vowel) e.g., shosha, basti, makkah
+          return { val: isLast ? 'a' : 'h', type: isLast ? 'V' : 'C' };
+        case 'ا': return { val: i === 0 ? 'a' : 'aa', type: 'V' }; // Initial alif is 'a', medial is 'aa'
+        case 'ں': return { val: 'n', type: 'M' };
+        case 'ء': return { val: 'a', type: 'V' };
+        default: return { val: c, type: 'U' };
+      }
+    });
+
+    // Common consonant clusters that do NOT take 'a' in Roman Urdu
+    const skipVowelPairs = new Set([
+      'st', 'pt', 'kt', 'qt', 'ld', 'rd', 'rz', 'rk', 'rn', 'ft', 'lm', 'lt', 'rt', 'rf', 'rs', 'sp', 'hm', 'hk',
+      'zw', 'lw', 'sh'
+    ]);
+
+    const romanParts: string[] = [];
+    for (let i = 0; i < charList.length; i++) {
+      const curr = charList[i];
+      const next = charList[i + 1];
+      const prev = charList[i - 1];
+
+      romanParts.push(curr.val);
+
+      if (curr.type === 'C' && next && next.type === 'C') {
+        if (next.val === 'h') continue;
+        if (curr.val === 'h' && prev && prev.type === 'C') continue;
+        if (curr.val === 'n') continue;
+
+        // Skip if they form a common non-vowelled Latin cluster
+        const pair = curr.val + next.val;
+        if (skipVowelPairs.has(pair)) {
+          continue;
+        }
+
+        romanParts.push('a');
+      }
     }
+
+    let roman = romanParts.join('');
+    roman = roman
+      .replace(/a{2,}/g, 'aa')
+      .replace(/e{2,}/g, 'ee')
+      .replace(/o{2,}/g, 'oo');
+
     return prefix + roman + punctuation;
   });
 

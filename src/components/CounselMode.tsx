@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Search, Sparkles, Copy, Check, BookOpen, AlertCircle, Send, Settings, RefreshCw } from 'lucide-react';
+import { Heart, Search, Sparkles, Copy, Check, BookOpen, AlertCircle, Settings, RefreshCw } from 'lucide-react';
 import { COUNSELING_REGISTRY, findBestProfile, type CounselingProfile } from '../search/counselRegistry';
 import type { SearchEngine } from '../search/searchEngine';
 import type { ScriptureEntry } from '../types/scripture';
@@ -247,6 +247,21 @@ export function CounselMode({
         >
           ✨ Live AI Chat
         </button>
+      </div>
+
+      {/* Mode Status Banner Indicator */}
+      <div className="max-w-xs mx-auto no-print">
+        {activeTab === 'registry' ? (
+          <div className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-slate-100 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/40 rounded-xl text-[10px] font-bold font-display uppercase tracking-wider text-slate-500 dark:text-slate-400 shadow-xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+            <span>📋 Offline Registry (Non-AI)</span>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-gold-500/5 border border-gold-500/15 rounded-xl text-[10px] font-bold font-display uppercase tracking-wider text-gold-600 dark:text-gold-400 shadow-xs">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+            <span>✨ Live AI Chat (Online)</span>
+          </div>
+        )}
       </div>
 
       {/* VIEW A: REGISTRY COUNSEL */}
@@ -524,7 +539,7 @@ export function CounselMode({
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Share your thoughts or ask a spiritual question..."
+                placeholder="Ask the AI counselor a spiritual question or share your heart..."
                 disabled={isAiSending}
                 className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#161a22] border border-stone-200/80 dark:border-gold-500/20 text-xs sm:text-sm text-slate-900 dark:text-gold-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:border-gold-500 disabled:opacity-60"
               />
@@ -541,8 +556,8 @@ export function CounselMode({
                 disabled={isAiSending || !chatInput.trim()}
                 className="h-11 px-4 bg-gold-500 hover:bg-gold-600 text-[#11141a] rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-95 disabled:opacity-50 shrink-0 cursor-pointer"
               >
-                <Send className="h-3.5 w-3.5" />
-                <span className="text-[10px] font-bold font-display uppercase tracking-wider hidden sm:inline">Send</span>
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="text-[10px] font-bold font-display uppercase tracking-wider hidden sm:inline">Ask AI</span>
               </button>
             </form>
           </div>

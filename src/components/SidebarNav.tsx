@@ -58,18 +58,23 @@ export function SidebarNav({
   return (
     <div className="w-full space-y-4">
       {/* Sidebar header */}
-      <div className="flex items-center justify-between px-2">
-        <span className="text-xs font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500">
-          Library Concordance
-        </span>
-        {(selectedBook || selectedChapter) && (
-          <button
-            onClick={onClearFilters}
-            className="text-[10px] font-bold font-display text-gold-600 hover:text-gold-700 dark:text-gold-500 dark:hover:text-gold-400 uppercase tracking-wide cursor-pointer animate-in fade-in"
-          >
-            Clear Browse
-          </button>
-        )}
+      <div className="space-y-1.5 px-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold font-display uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            Browse Concordance
+          </span>
+          {(selectedBook || selectedChapter) && (
+            <button
+              onClick={onClearFilters}
+              className="text-[10px] font-bold font-display text-gold-600 hover:text-gold-700 dark:text-gold-500 dark:hover:text-gold-400 uppercase tracking-wide cursor-pointer animate-in fade-in"
+            >
+              Clear Browse
+            </button>
+          )}
+        </div>
+        <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold leading-normal">
+          Select a book (e.g. Quran or Hadith collections) or Juz to browse chapters and verses.
+        </p>
       </div>
 
       {/* Accordion List */}

@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, BookOpen, ChevronRight, Copy, Check, Printer } from 'lucide-react';
+import { X, BookOpen, ChevronRight, Copy, Check, Download } from 'lucide-react';
 import type { ScriptureEntry } from '../types/scripture';
 import { copyToClipboard } from '../utils/share';
 import { cn } from '../utils/cn';
 import { QuranVerseText } from './QuranVerseText';
+import { QURAN_ARABIC_DATA } from '../search/quranArabicData';
 
 interface ReaderModeProps {
   isOpen: boolean;
@@ -33,14 +34,21 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
     }
   }, [isOpen, activeEntry]);
 
-  const [chapterData, setChapterData] = React.useState<Record<string, { ar: string; tr: string }>>({});
+  const [chapterData, setChapterData] = React.useState<Record<string, { ar: string; tr: string; ro: string }>>({});
   const [isLoadingExtra, setIsLoadingExtra] = React.useState(false);
   const [extraError, setExtraError] = React.useState(false);
 
-  // Pre-load Arabic script & English transliterations for the entire Quran chapter on-demand
+  const [surahInfo, setSurahInfo] = React.useState<{ short_text: string; text: string } | null>(null);
+  const [isLoadingInfo, setIsLoadingInfo] = React.useState(false);
+  const [isInfoExpanded, setIsInfoExpanded] = React.useState(false);
+
+  // Pre-load Arabic script, English transliterations & Roman Urdu (Hinglish) for the entire Quran chapter on-demand
   React.useEffect(() => {
     if (!isOpen || !activeEntry || activeEntry.collection.toLowerCase() !== 'quran') {
-      Promise.resolve().then(() => setChapterData({}));
+      Promise.resolve().then(() => {
+        setChapterData({});
+        setSurahInfo(null);
+      });
       return;
     }
 
@@ -60,10 +68,21 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
         if (!trRes.ok) throw new Error('Transliteration fetch failed');
         const trJson = await trRes.json();
 
-        const dataMap: Record<string, { ar: string; tr: string }> = {};
+        // 3. Fetch Roman Urdu (Hinglish) translations (translation ID 831) for the entire Surah
+        let roJson = { translations: [] };
+        try {
+          const roRes = await fetch(`https://api.quran.com/api/v4/quran/translations/831?chapter_number=${chapterNum}`);
+          if (roRes.ok) {
+            roJson = await roRes.json();
+          }
+        } catch (err) {
+          console.error('Failed to load Roman Urdu chapter translations:', err);
+        }
+
+        const dataMap: Record<string, { ar: string; tr: string; ro: string }> = {};
 
         arJson.verses?.forEach((v: { verse_key: string; text_uthmani: string }) => {
-          dataMap[v.verse_key] = { ar: v.text_uthmani, tr: '' };
+          dataMap[v.verse_key] = { ar: v.text_uthmani, tr: '', ro: '' };
         });
 
         trJson.translations?.forEach((t: { text: string }, idx: number) => {
@@ -72,6 +91,16 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
             const key = arVerse.verse_key;
             if (dataMap[key]) {
               dataMap[key].tr = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
+            }
+          }
+        });
+
+        roJson.translations?.forEach((t: { text: string }, idx: number) => {
+          const arVerse = arJson.verses?.[idx];
+          if (arVerse) {
+            const key = arVerse.verse_key;
+            if (dataMap[key]) {
+              dataMap[key].ro = t.text.replace(/<[^>]*>/g, ''); // strip HTML tags
             }
           }
         });
@@ -85,8 +114,31 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
       }
     };
 
+    const fetchSurahInfo = async () => {
+      setIsLoadingInfo(true);
+      try {
+        const res = await fetch(`https://api.quran.com/api/v4/chapters/${chapterNum}/info`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.chapter_info) {
+            setSurahInfo(json.chapter_info);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load Surah info:', err);
+      } finally {
+        setIsLoadingInfo(false);
+      }
+    };
+
     fetchChapterExtra();
+    fetchSurahInfo();
   }, [isOpen, activeEntry]);
+
+  const handleClose = () => {
+    setIsInfoExpanded(false);
+    onClose();
+  };
 
   const handleCopy = async (entry: ScriptureEntry) => {
     const citation = `"${entry.text}" — ${entry.reference}`;
@@ -95,6 +147,227 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
       setCopiedId(entry.id);
       setTimeout(() => setCopiedId(null), 2000);
     }
+  };
+
+  const handleDownloadHTML = () => {
+    if (!activeEntry) return;
+
+    const bookName = activeEntry.book;
+    const chapterNum = activeEntry.chapter;
+    const title = isQuran 
+      ? `Surah ${bookName} — Chapter ${chapterNum}` 
+      : `${bookName} — Chapter ${chapterNum}`;
+
+    // Compile the list of verses
+    const versesHtml = contextEntries.map((entry) => {
+      const quranKey = `${entry.chapter}:${entry.verse}`;
+      const localData = QURAN_ARABIC_DATA[quranKey];
+      
+      // Get the loaded Arabic, Transliteration, and Hinglish Translation
+      const ar = chapterData?.[quranKey]?.ar || localData?.ar || '';
+      const tr = chapterData?.[quranKey]?.tr || localData?.tr || '';
+      const ro = chapterData?.[quranKey]?.ro || '';
+      const en = entry.text;
+
+      return `
+      <div class="verse-item">
+        <div class="verse-meta">
+          Verse ${entry.verse}
+        </div>
+        ${ar ? `<p class="verse-arabic">${ar}</p>` : ''}
+        ${tr ? `<p class="verse-translit">${tr}</p>` : ''}
+        <p class="verse-translation">${en}</p>
+        ${ro ? `<p class="verse-hinglish"><span class="hinglish-label">Hinglish:</span> ${ro}</p>` : ''}
+      </div>
+      `;
+    }).join('');
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cinzel:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fcfbf7;
+      color: #1e293b;
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-top: 6px solid #dca523;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px double #e2e8f0;
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      color: #9e6414;
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .header p {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #64748b;
+      margin: 0;
+      font-weight: 600;
+    }
+    .commentary-box {
+      background: #fbfbfb;
+      border-left: 3px solid #dca523;
+      padding: 16px 20px;
+      margin-bottom: 30px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #475569;
+    }
+    .commentary-box h3 {
+      margin: 0 0 6px 0;
+      color: #9e6414;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .verse-item {
+      border-bottom: 1px solid #f1f5f9;
+      padding: 24px 0;
+    }
+    .verse-item:last-child {
+      border-bottom: none;
+    }
+    .verse-meta {
+      font-size: 10px;
+      font-weight: 700;
+      color: #9e6414;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .verse-arabic {
+      font-family: 'Amiri', serif;
+      font-size: 28px;
+      text-align: right;
+      direction: rtl;
+      margin: 0 0 16px 0;
+      line-height: 2;
+      color: #0f172a;
+    }
+    .verse-translit {
+      font-style: italic;
+      color: #64748b;
+      font-size: 13px;
+      margin: 0 0 10px 0;
+    }
+    .verse-translation {
+      font-size: 15px;
+      color: #1e293b;
+      margin: 0 0 10px 0;
+      font-family: Georgia, serif;
+    }
+    .verse-hinglish {
+      font-size: 13.5px;
+      color: #b45309;
+      margin: 0;
+    }
+    .hinglish-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #b45309;
+      margin-right: 5px;
+    }
+    .btn-print {
+      display: block;
+      width: 100%;
+      max-width: 250px;
+      margin: 40px auto 0 auto;
+      padding: 12px 20px;
+      background: #9e6414;
+      color: white;
+      text-align: center;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(158, 100, 20, 0.2);
+      transition: background 0.2s;
+    }
+    .btn-print:hover {
+      background: #84520f;
+    }
+    @media print {
+      body {
+        background-color: white;
+        padding: 0;
+      }
+      .container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .btn-print {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>${title}</h1>
+      <p>VerseFlow Reference Library</p>
+    </div>
+    
+    ${isQuran && surahInfo ? `
+    <div class="commentary-box">
+      <h3>Surah Context & Commentary</h3>
+      <div>${surahInfo.short_text}</div>
+    </div>
+    ` : ''}
+    
+    <div class="verses-list">
+      ${versesHtml}
+    </div>
+    
+    <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const formattedFilename = `${bookName.replace(/\s+/g, '_')}_Chapter_${chapterNum}.html`;
+    link.href = url;
+    link.setAttribute('download', formattedFilename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   if (!activeEntry) return null;
@@ -110,7 +383,7 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute inset-0 bg-[#0d0f12]/50 dark:bg-[#0d0f12]/80 backdrop-blur-xs cursor-pointer no-print"
           />
 
@@ -151,15 +424,15 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
                   </span>
                 )}
                 <button
-                  onClick={() => window.print()}
+                  onClick={handleDownloadHTML}
                   className="h-9 px-3.5 rounded-xl flex items-center gap-1.5 border border-stone-200/50 dark:border-gold-500/20 hover:bg-stone-100 dark:hover:bg-gold-950/20 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-gold-400 font-display text-xs font-bold transition-colors cursor-pointer"
-                  title="Save Surah as PDF"
+                  title="Download Chapter as Offline Study Sheet"
                 >
-                  <Printer className="h-4 w-4" />
-                  <span>Save PDF</span>
+                  <Download className="h-4 w-4" />
+                  <span>Download</span>
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="h-9 w-9 rounded-xl flex items-center justify-center border border-stone-200/50 dark:border-gold-500/20 hover:bg-stone-100 dark:hover:bg-gold-950/20 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-gold-400 transition-colors cursor-pointer"
                   title="Close Reader"
                 >
@@ -182,6 +455,43 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
                   Generated by VerseFlow Reference Library
                 </span>
               </div>
+
+              {/* Surah Context Banner */}
+              {isQuran && (surahInfo || isLoadingInfo) && (
+                <div className="glass p-5 rounded-2xl border border-gold-500/10 bg-gold-500/2 text-left mb-6 space-y-3 print-surah-banner">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold font-display uppercase tracking-widest text-gold-600 dark:text-gold-500">
+                        📖 Surah Context & Commentary (Tafhim)
+                      </span>
+                      {isLoadingInfo && (
+                        <span className="h-1.5 w-1.5 rounded-full bg-gold-500 animate-pulse" />
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsInfoExpanded(!isInfoExpanded)}
+                      className="text-[10px] font-bold font-display text-gold-600 dark:text-gold-400 hover:text-gold-700 uppercase tracking-wider transition-colors cursor-pointer border-none bg-transparent no-print"
+                    >
+                      {isInfoExpanded ? 'Hide Details' : 'Show Details'}
+                    </button>
+                  </div>
+                  
+                  {surahInfo && (
+                    <div className="space-y-2.5">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                        {surahInfo.short_text}
+                      </p>
+                      
+                      <div 
+                        className={`text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-4 pt-3 border-t border-gold-500/10 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin select-text surah-info-html no-print ${isInfoExpanded ? "block" : "hidden"}`}
+                        dangerouslySetInnerHTML={{ __html: surahInfo.text }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {contextEntries.map((item) => {
                 const isActive = item.id === activeEntry.id;
                 const itemVerseNum = item.verse ?? item.hadithNumber;
@@ -231,6 +541,7 @@ export function ReaderMode({ isOpen, onClose, activeEntry, contextEntries }: Rea
                           isActive={isActive}
                           preloadedAr={chapterData[`${item.chapter}:${item.verse}`]?.ar}
                           preloadedTr={chapterData[`${item.chapter}:${item.verse}`]?.tr}
+                          preloadedRo={chapterData[`${item.chapter}:${item.verse}`]?.ro}
                         />
                       ) : (
                         <>

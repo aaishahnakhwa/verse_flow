@@ -7,8 +7,20 @@ import { SAHABIYAT } from '../data/sahabiyat';
 import { ANGELS, JANNAH_GARDENS, JANNAH_GATES, JAHANNAM_LEVELS, MINOR_SIGNS, MAJOR_SIGNS, QIYAMAH_STAGES, REVEALED_BOOKS, PILLARS_OF_ISLAM, ARTICLES_OF_FAITH } from '../data/cosmology';
 import { DAILY_ADHKAR, DUA_ETIQUETTES, DUA_ACCEPTANCE_TIMES, DESTRUCTIVE_SINS, SAJDAH_VERSES } from '../data/worship';
 
-export function ReferenceHub() {
+interface ReferenceHubProps {
+  initialTab?: 'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology' | 'worship';
+}
+
+export function ReferenceHub({ initialTab }: ReferenceHubProps = {}) {
   const [activeTab, setActiveTab] = React.useState<'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology' | 'worship'>('names');
+  const [prevInitialTab, setPrevInitialTab] = React.useState(initialTab);
+
+  if (initialTab !== prevInitialTab) {
+    setPrevInitialTab(initialTab);
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }
   const [namesSearch, setNamesSearch] = React.useState('');
   const [prophetsSearch, setProphetsSearch] = React.useState('');
   const [sahabasSearch, setSahabasSearch] = React.useState('');

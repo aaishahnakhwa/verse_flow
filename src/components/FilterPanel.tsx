@@ -1,8 +1,6 @@
-import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, RotateCcw, ChevronDown, Check, Loader2 } from 'lucide-react';
+import { ChevronDown, Check, Loader2 } from 'lucide-react';
 import type { CollectionConfig } from '../types/scripture';
-import { Button } from './ui/Button';
 import { JUZ_RANGES, getSurahsForJuz } from '../utils/juzMapper';
 
 interface FilterPanelProps {
@@ -22,8 +20,7 @@ interface FilterPanelProps {
   onChapterChange: (chapter: string) => void;
   selectedJuz: string;
   onJuzChange: (juz: string) => void;
-  onClearFilters: () => void;
-  isFilterActive: boolean;
+  isOpen: boolean;
 }
 
 export function FilterPanel({
@@ -43,46 +40,13 @@ export function FilterPanel({
   onChapterChange,
   selectedJuz,
   onJuzChange,
-  onClearFilters,
-  isFilterActive,
+  isOpen,
 }: FilterPanelProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
-
   const isQuranActive = loadedCollectionIds.has('quran');
   const isHadithActive = availableHadithBooks.length > 0;
 
   return (
-    <div className="w-full max-w-3xl mx-auto mt-4 z-10">
-      {/* Toggle button */}
-      <div className="flex items-center justify-between px-2 mb-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer"
-        >
-          <Filter className="h-4 w-4" />
-          <span>{isOpen ? 'Hide Filters' : 'Show Filters'}</span>
-          {isFilterActive && (
-            <span className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" />
-          )}
-        </Button>
-
-        {isFilterActive && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="text-xs text-slate-400 hover:text-slate-800 dark:hover:white flex items-center gap-1.5 cursor-pointer"
-          >
-            <RotateCcw className="h-3 w-3" />
-            <span>Reset Filters</span>
-          </Button>
-        )}
-      </div>
-
+    <div className="w-full max-w-3xl mx-auto mt-2 z-10">
       {/* Expandable panel */}
       <AnimatePresence initial={false}>
         {isOpen && (

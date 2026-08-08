@@ -99,6 +99,7 @@ export function SearchBox({
           <Search className="absolute left-4.5 h-5 w-5 text-slate-400 dark:text-slate-500" />
           <input
             ref={inputRef}
+            id="search-input"
             type="text"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}

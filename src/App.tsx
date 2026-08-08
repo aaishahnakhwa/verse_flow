@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, BookOpen, AlertCircle, Compass, Bookmark } from 'lucide-react';
+import { Loader2, BookOpen, AlertCircle, Compass, Bookmark, Filter, RotateCcw, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import type { ScriptureEntry } from './types/scripture';
 import { searchEngine } from './search/searchEngine';
@@ -21,6 +21,7 @@ import { ReaderMode } from './components/ReaderMode';
 import { Button } from './components/ui/Button';
 import { CounselMode } from './components/CounselMode';
 import { ReferenceHub } from './components/ReferenceHub';
+import { DashboardHome } from './components/DashboardHome';
 
 const POPULAR_SEARCHES = ['patience', 'anxiety', 'depression', 'charity', '2:255', 'Moses', 'forgiveness', 'knowledge'];
 
@@ -37,9 +38,11 @@ export default function App() {
   const [selectedTopic, setSelectedTopic] = React.useState('');
   const [selectedChapter, setSelectedChapter] = React.useState('');
   const [selectedJuz, setSelectedJuz] = React.useState('');
+  const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const [scriptureCategory, setScriptureCategory] = React.useState<'quran' | 'hadith' | null>(null);
   
   // 3. View Management
-  const [activeView, setActiveView] = React.useState<'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference'>('search');
+  const [activeView, setActiveView] = React.useState<'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference'>('dashboard');
   const [isHelpOpen, setIsHelpOpen] = React.useState(false);
   const [isMobileConcordanceOpen, setIsMobileConcordanceOpen] = React.useState(false);
 
@@ -51,6 +54,33 @@ export default function App() {
 
   // 5. Pagination Limit
   const [limit, setLimit] = React.useState(50);
+
+  // 6. Reference initial tab manager
+  const [referenceInitialTab, setReferenceInitialTab] = React.useState<'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology' | 'worship'>('names');
+
+  const handleDashboardNavigate = (
+    view: 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference',
+    tab?: 'names' | 'prophets' | 'sahabas' | 'sahabiyat' | 'cosmology' | 'worship'
+  ) => {
+    if (view === 'reference' && tab) {
+      setReferenceInitialTab(tab);
+    }
+    if (view === 'search') {
+      setScriptureCategory(null);
+    }
+    setActiveView(view);
+  };
+
+  const handleQuickSearch = (q: string) => {
+    setQuery(q);
+    setScriptureCategory('quran'); // Default to Quran context when searching from home searchbar
+    setCollections(prev => prev.map(c => ({
+      ...c,
+      enabled: c.id === 'quran'
+    })));
+    setActiveView('search');
+    setLimit(50);
+  };
 
   // Apply debouncing to query to optimize indexing matches while typing
   const debouncedQuery = useDebounce(query, 200);
@@ -329,7 +359,8 @@ export default function App() {
   const isFilterActive = !!(selectedBook || selectedTopic || selectedChapter || exactPhrase || selectedJuz || disabledCollectionsCount > 0);
 
   return (
-    <Layout
+    <>
+      <Layout
       theme={theme}
       onThemeToggle={() => setTheme(prev => (prev === 'light' ? 'dark' : 'light'))}
       activeView={activeView}
@@ -370,14 +401,103 @@ export default function App() {
             transition={{ duration: 0.25 }}
             className="w-full space-y-8 no-print"
           >
+            {/* View 0: Home Dashboard View */}
+            {activeView === 'dashboard' && (
+              <DashboardHome
+                onNavigate={handleDashboardNavigate}
+                onQuickSearch={handleQuickSearch}
+                bookmarksCount={bookmarks.length}
+              />
+            )}
+
             {/* View 1: Simple Search (Dashboard Home) */}
             {activeView === 'search' && (
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start text-left">
-                
-                {/* Left Sidebar Concordance (Desktop Only) */}
-                <div className="lg:col-span-1 hidden lg:block sticky top-22 glass p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
-                  <SidebarNav
-                    collections={collections}
+              scriptureCategory === null ? (
+                /* Sub-landing page to select library */
+                <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-300">
+                  {/* Visual Header */}
+                  <div className="text-center space-y-3 max-w-2xl mx-auto py-4">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight brand-name-glow">
+                      Scripture Libraries
+                    </h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold leading-relaxed">
+                      Select a library to explore, browse by chapters, or search matching verses and traditions.
+                    </p>
+                  </div>
+
+                  {/* Two large boxes */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+                    
+                    {/* Library 1: Quran */}
+                    <div 
+                      onClick={() => {
+                        setScriptureCategory('quran');
+                        setCollections(prev => prev.map(c => ({
+                          ...c,
+                          enabled: c.id === 'quran'
+                        })));
+                      }}
+                      className="glass p-8 rounded-3xl border border-stone-200/60 dark:border-gold-500/10 hover:scale-[1.03] active:scale-[0.99] transition-all duration-200 group cursor-pointer text-left flex flex-col justify-between min-h-[220px] shadow-lg shadow-gold-500/2"
+                    >
+                      <div className="space-y-4">
+                        <div className="h-12 w-12 rounded-2xl bg-gold-500/10 dark:bg-gold-500/10 flex items-center justify-center text-gold-600 dark:text-gold-400 shrink-0">
+                          <BookOpen className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-xl font-bold font-display uppercase tracking-wider text-slate-800 dark:text-white group-hover:text-gold-600 dark:group-hover:text-gold-500 transition-colors">
+                          The Holy Qur'an
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold font-sans">
+                          Browse by Surah (Chapter) or Juz (Part). Explore translation, transliteration, and bookmark specific verses with deep-context reading.
+                        </p>
+                      </div>
+                      <button
+                        className="inline-flex items-center gap-1.5 text-xs font-bold font-display uppercase tracking-widest text-gold-600 group-hover:text-gold-700 dark:text-gold-500 dark:group-hover:text-gold-400 pt-6 mt-auto border-none bg-transparent"
+                      >
+                        <span>Open Qur'an Library</span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </div>
+
+                    {/* Library 2: Hadith & Reference */}
+                    <div 
+                      onClick={() => {
+                        setScriptureCategory('hadith');
+                        setCollections(prev => prev.map(c => ({
+                          ...c,
+                          enabled: c.id !== 'quran'
+                        })));
+                      }}
+                      className="glass p-8 rounded-3xl border border-stone-200/60 dark:border-gold-500/10 hover:scale-[1.03] active:scale-[0.99] transition-all duration-200 group cursor-pointer text-left flex flex-col justify-between min-h-[220px] shadow-lg shadow-gold-500/2"
+                    >
+                      <div className="space-y-4">
+                        <div className="h-12 w-12 rounded-2xl bg-amber-500/10 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                          <Compass className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-xl font-bold font-display uppercase tracking-wider text-slate-800 dark:text-white group-hover:text-gold-600 dark:group-hover:text-gold-500 transition-colors">
+                          Hadiths & References
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-semibold font-sans">
+                          Explore prophetic traditions including Sahih al-Bukhari, Sahih Muslim, Riyad as-Salihin, and 40 Hadith Nawawi with chapter references.
+                        </p>
+                      </div>
+                      <button
+                        className="inline-flex items-center gap-1.5 text-xs font-bold font-display uppercase tracking-widest text-gold-600 group-hover:text-gold-700 dark:text-gold-500 dark:group-hover:text-gold-400 pt-6 mt-auto border-none bg-transparent"
+                      >
+                        <span>Open Hadith Collections</span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              ) : (
+                /* Regular search concordance layout */
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start text-left">
+                  
+                  {/* Left Sidebar Concordance (Desktop Only) */}
+                  <div className="lg:col-span-1 hidden lg:block sticky top-22 glass p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
+                    <SidebarNav
+                      collections={collections.filter(c => scriptureCategory === 'hadith' ? c.id !== 'quran' : c.id === 'quran')}
                     loadedCollectionIds={loadedCollectionIds}
                     selectedBook={selectedBook}
                     selectedChapter={selectedChapter}
@@ -398,7 +518,20 @@ export default function App() {
                 </div>
 
                 {/* Right Main Search Area */}
-                <div className="lg:col-span-3 space-y-8 w-full">
+                <div className="lg:col-span-3 space-y-6 w-full">
+                  {/* Back to Libraries Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScriptureCategory(null);
+                      handleClearFilters();
+                      setQuery('');
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold font-display uppercase tracking-widest text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer transition-colors border-none bg-transparent"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    <span>Back to Libraries</span>
+                  </button>
                   {/* Visual Header */}
                   <div className="text-center space-y-3.5 max-w-2xl mx-auto py-4">
                     <h1 className="text-4xl sm:text-5xl font-bold tracking-tight brand-name-glow">
@@ -422,45 +555,119 @@ export default function App() {
                       autoFocus={activeView === 'search' && !query}
                     />
 
-                    {/* Mobile Browse Concordance (Collapsible) */}
-                    <div className="lg:hidden block no-print">
-                      <button
-                        onClick={() => setIsMobileConcordanceOpen(!isMobileConcordanceOpen)}
-                        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-stone-200/60 dark:border-gold-500/20 bg-white/60 dark:bg-[#15120d]/40 text-xs font-bold font-display uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gold-950/10 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <BookOpen className="h-4 w-4 text-gold-500" />
-                          <span>Browse Concordance (Juz / Surah / Books)</span>
+                    {/* Quran Juz Browse Grid */}
+                    {scriptureCategory === 'quran' && !query && (
+                      <div className="glass p-5 rounded-3xl border border-stone-200/50 dark:border-gold-500/10 space-y-3.5 animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold font-display uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                            📖 Browse by Juz (Quran Parts)
+                          </span>
+                          {selectedJuz && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedJuz('')}
+                              className="text-[9px] font-bold font-display text-red-500 uppercase tracking-wider hover:underline cursor-pointer border-none bg-transparent"
+                            >
+                              Clear Selection
+                            </button>
+                          )}
                         </div>
-                        <span className="text-[10px] text-slate-400 font-bold font-display">
-                          {isMobileConcordanceOpen ? 'Hide' : 'Show'}
-                        </span>
-                      </button>
+                        
+                        <div className="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                          {Array.from({ length: 30 }, (_, i) => {
+                            const juzNum = i + 1;
+                            const isActive = selectedJuz === juzNum.toString();
+                            return (
+                              <button
+                                key={juzNum}
+                                type="button"
+                                onClick={() => handleJuzChange(isActive ? '' : juzNum.toString())}
+                                className={`h-9 rounded-xl text-xs font-bold font-display flex items-center justify-center transition-all cursor-pointer border ${
+                                  isActive
+                                    ? 'bg-gold-500 border-gold-500 text-[#11141a]'
+                                    : 'bg-white dark:bg-[#161a22] border-stone-200/60 dark:border-gold-500/10 text-slate-600 dark:text-stone-300 hover:border-gold-500/40 hover:bg-gold-500/5'
+                                }`}
+                              >
+                                {juzNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Controls Row (Filters & Mobile Browse) */}
+                    <div className="flex flex-wrap items-center justify-center gap-3 no-print pt-1">
                       
-                      {isMobileConcordanceOpen && (
-                        <div className="mt-2.5 glass p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
-                          <SidebarNav
-                            collections={collections}
-                            loadedCollectionIds={loadedCollectionIds}
-                            selectedBook={selectedBook}
-                            selectedChapter={selectedChapter}
-                            onBookSelect={(book, colId) => {
-                              setSelectedBook(book);
-                              setSelectedChapter('');
-                              setLimit(50);
-                              const col = collections.find(c => c.id === colId);
-                              if (col && !col.enabled) {
-                                handleToggleCollection(colId);
-                              }
-                            }}
-                            onChapterSelect={handleChapterChange}
-                            getBooksForCollection={(colName) => searchEngine.getBooksForCollection(colName)}
-                            getChaptersForBook={(bookName) => searchEngine.getChaptersForBook(bookName)}
-                            onClearFilters={handleClearFilters}
-                          />
-                        </div>
+                      {/* Mobile Browse Accordion Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => setIsMobileConcordanceOpen(!isMobileConcordanceOpen)}
+                        className={`lg:hidden inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-stone-200/60 dark:border-gold-500/10 text-[10px] font-bold font-display uppercase tracking-widest transition-all cursor-pointer shadow-xs ${
+                          isMobileConcordanceOpen
+                            ? 'bg-gold-500/15 border-gold-500/20 text-gold-600 dark:text-gold-400'
+                            : 'bg-white/60 dark:bg-slate-900/60 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                        }`}
+                      >
+                        <BookOpen className="h-3.5 w-3.5" />
+                        <span>Browse Index</span>
+                        <span className="text-[9px] opacity-60">({isMobileConcordanceOpen ? 'Hide' : 'Show'})</span>
+                      </button>
+
+                      {/* Filter panel Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                        className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-stone-200/60 dark:border-gold-500/10 text-[10px] font-bold font-display uppercase tracking-widest transition-all cursor-pointer shadow-xs ${
+                          isFilterOpen
+                            ? 'bg-gold-500/15 border-gold-500/20 text-gold-600 dark:text-gold-400'
+                            : 'bg-white/60 dark:bg-slate-900/60 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                        }`}
+                      >
+                        <Filter className="h-3.5 w-3.5" />
+                        <span>Refine Search</span>
+                        {isFilterActive && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-gold-500 animate-pulse" />
+                        )}
+                      </button>
+
+                      {/* Reset Filters Shortcut (If active) */}
+                      {isFilterActive && (
+                        <button
+                          type="button"
+                          onClick={handleClearFilters}
+                          className="inline-flex items-center gap-1 text-[10px] font-bold font-display uppercase tracking-widest text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer border-none bg-transparent"
+                        >
+                          <RotateCcw className="h-3 w-3" />
+                          <span>Reset</span>
+                        </button>
                       )}
                     </div>
+
+                    {/* Mobile Browse Concordance Expandable Container */}
+                    {isMobileConcordanceOpen && (
+                      <div className="lg:hidden block no-print mt-2 glass p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/40 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <SidebarNav
+                          collections={collections.filter(c => scriptureCategory === 'hadith' ? c.id !== 'quran' : c.id === 'quran')}
+                          loadedCollectionIds={loadedCollectionIds}
+                          selectedBook={selectedBook}
+                          selectedChapter={selectedChapter}
+                          onBookSelect={(book, colId) => {
+                            setSelectedBook(book);
+                            setSelectedChapter('');
+                            setLimit(50);
+                            const col = collections.find(c => c.id === colId);
+                            if (col && !col.enabled) {
+                              handleToggleCollection(colId);
+                            }
+                          }}
+                          onChapterSelect={handleChapterChange}
+                          getBooksForCollection={(colName) => searchEngine.getBooksForCollection(colName)}
+                          getChaptersForBook={(bookName) => searchEngine.getChaptersForBook(bookName)}
+                          onClearFilters={handleClearFilters}
+                        />
+                      </div>
+                    )}
 
                     {/* Active Filters Chip Bar */}
                     {isFilterActive && (
@@ -562,7 +769,8 @@ export default function App() {
 
                     {/* Filter panel drawer */}
                     <FilterPanel
-                      collections={collections}
+                      isOpen={isFilterOpen}
+                      collections={collections.filter(c => scriptureCategory === 'hadith' ? c.id !== 'quran' : c.id === 'quran')}
                       loadedCollectionIds={loadedCollectionIds}
                       loadingCollections={loadingCollections}
                       onToggleCollection={handleToggleCollection}
@@ -578,8 +786,6 @@ export default function App() {
                       onChapterChange={handleChapterChange}
                       selectedJuz={selectedJuz}
                       onJuzChange={handleJuzChange}
-                      onClearFilters={handleClearFilters}
-                      isFilterActive={isFilterActive}
                     />
 
                     {/* Suggestion Chips */}
@@ -717,9 +923,9 @@ export default function App() {
                     ) : null}
                   </div>
                 </div>
-
               </div>
-            )}
+            )
+          )}
 
             {/* View 2: Advanced Search View */}
             {activeView === 'advanced' && (
@@ -760,22 +966,23 @@ export default function App() {
 
             {/* View 5: Reference Guides Hub */}
             {activeView === 'reference' && (
-              <ReferenceHub />
+              <ReferenceHub initialTab={referenceInitialTab} />
             )}
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Keyboard shortcuts menu modal */}
-      <ShortcutsHelp open={isHelpOpen} onOpenChange={setIsHelpOpen} />
-
-      {/* Scripture Reader context modal */}
-      <ReaderMode
-        isOpen={isReaderOpen}
-        onClose={() => setIsReaderOpen(false)}
-        activeEntry={activeReaderEntry}
-        contextEntries={contextEntries}
-      />
     </Layout>
+
+    {/* Keyboard shortcuts menu modal */}
+    <ShortcutsHelp open={isHelpOpen} onOpenChange={setIsHelpOpen} />
+
+    {/* Scripture Reader context modal */}
+    <ReaderMode
+      isOpen={isReaderOpen}
+      onClose={() => setIsReaderOpen(false)}
+      activeEntry={activeReaderEntry}
+      contextEntries={contextEntries}
+    />
+  </>
   );
 }

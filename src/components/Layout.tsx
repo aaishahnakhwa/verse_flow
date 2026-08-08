@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart, BookOpen } from 'lucide-react';
+import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart, BookOpen, Home } from 'lucide-react';
 import { Button } from './ui/Button';
 
 interface LayoutProps {
   children: React.ReactNode;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
-  activeView: 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference';
-  onViewChange: (view: 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference') => void;
+  activeView: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference';
+  onViewChange: (view: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference') => void;
   onHelpClick: () => void;
   bookmarksCount: number;
 }
@@ -45,7 +45,9 @@ export function Layout({
       // Navigation shortcuts
       if (e.key === 'g' && !isInputFocused) {
         const nextKeyHandler = (nextEvent: KeyboardEvent) => {
-          if (nextEvent.key === 's') {
+          if (nextEvent.key === 'h') {
+            onViewChange('dashboard');
+          } else if (nextEvent.key === 's') {
             onViewChange('search');
           } else if (nextEvent.key === 'a') {
             onViewChange('advanced');
@@ -81,7 +83,7 @@ export function Layout({
           
           {/* Logo Brand */}
           <button
-            onClick={() => onViewChange('search')}
+            onClick={() => onViewChange('dashboard')}
             className="flex items-center gap-2.5 text-left group cursor-pointer focus:outline-hidden"
           >
             <div className="h-9 w-9 rounded-xl bg-gold-500 dark:bg-gold-500 flex items-center justify-center text-[#11141a] dark:text-[#11141a] logo-box-glow">
@@ -105,6 +107,16 @@ export function Layout({
 
           {/* Navigation Controls */}
           <nav className="flex items-center gap-1.5 md:gap-3">
+            <Button
+              variant={activeView === 'dashboard' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => onViewChange('dashboard')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline font-display text-xs font-semibold">Home</span>
+            </Button>
+
             <Button
               variant={activeView === 'search' ? 'secondary' : 'ghost'}
               size="sm"

@@ -19,8 +19,8 @@ export function CounselMode({
   onToggleBookmark,
   onReadContext,
 }: CounselModeProps) {
-  // Mode selector: 'registry' (offline) or 'ai' (live openrouter)
-  const [activeTab, setActiveTab] = React.useState<'registry' | 'ai'>('registry');
+  // Mode selector: 'registry' (offline) or 'ai' (live openrouter) - Defaulting to AI Chat
+  const [activeTab, setActiveTab] = React.useState<'registry' | 'ai'>('ai');
 
   // Registry Mode States
   const [userInput, setUserInput] = React.useState('');
@@ -211,7 +211,7 @@ export function CounselMode({
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 z-10 relative">
-      
+
       {/* Hero Welcome Panel */}
       <div className="text-center space-y-3 max-w-2xl mx-auto py-2">
         <div className="inline-flex h-11 w-11 rounded-full bg-gold-500/10 dark:bg-gold-500/10 items-center justify-center text-gold-600 dark:text-gold-500 mb-1 shadow-xs shadow-gold-500/5">
@@ -229,21 +229,19 @@ export function CounselMode({
       <div className="flex justify-center gap-1.5 p-1 bg-slate-200/50 dark:bg-slate-800/30 rounded-xl border border-slate-200/20 dark:border-slate-700/20 max-w-xs mx-auto no-print">
         <button
           onClick={() => setActiveTab('registry')}
-          className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-            activeTab === 'registry'
-              ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
-              : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
+          className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${activeTab === 'registry'
+            ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
+            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
         >
           Registry Profiles
         </button>
         <button
           onClick={() => setActiveTab('ai')}
-          className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${
-            activeTab === 'ai'
-              ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
-              : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
+          className={`flex-1 py-1.5 px-3 rounded-lg text-[10px] font-bold font-display uppercase tracking-wider transition-all duration-200 cursor-pointer ${activeTab === 'ai'
+            ? 'bg-white dark:bg-slate-900 text-gold-600 dark:text-gold-500 shadow-xs'
+            : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
         >
           ✨ Live AI Chat
         </button>
@@ -480,6 +478,15 @@ export function CounselMode({
             )}
           </div>
 
+          {/* AI Unpredictability Disclaimer */}
+          <div className="flex items-start gap-2.5 p-3.5 bg-amber-500/5 dark:bg-amber-500/5 border border-amber-500/15 dark:border-amber-500/10 rounded-2xl text-xs text-amber-700 dark:text-amber-400 font-semibold leading-relaxed shadow-sm">
+            <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5 animate-pulse text-amber-500" />
+            <div>
+              <span className="font-bold uppercase tracking-wider text-[10px] block mb-0.5">⚠️ AI Counselor Disclaimer</span>
+              Please note that AI is unpredictable and can sometimes provide incorrect or inaccurate answers. Always verify scriptural references, hadiths, contexts and rulings with qualified scholars or authentic sources.
+            </div>
+          </div>
+
           {/* Chat Messages Panel */}
           <div className="glass rounded-2xl border border-stone-200/50 dark:border-gold-500/10 shadow-lg p-4 space-y-4 flex flex-col min-h-[350px]">
             <div className="flex-1 overflow-y-auto max-h-[380px] space-y-3.5 pr-1 text-xs sm:text-sm">
@@ -489,11 +496,10 @@ export function CounselMode({
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in duration-200`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl p-3.5 ${
-                      msg.role === 'user'
-                        ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 rounded-tr-xs border border-slate-200/30'
-                        : 'bg-gold-500/5 border border-gold-500/15 dark:border-gold-500/10 text-slate-800 dark:text-stone-300 rounded-tl-xs space-y-2'
-                    }`}
+                    className={`max-w-[85%] rounded-2xl p-3.5 ${msg.role === 'user'
+                      ? 'bg-slate-100 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 rounded-tr-xs border border-slate-200/30'
+                      : 'bg-gold-500/5 border border-gold-500/15 dark:border-gold-500/10 text-slate-800 dark:text-stone-300 rounded-tl-xs space-y-2'
+                      }`}
                   >
                     {msg.role === 'assistant' && (
                       <div className="flex items-center gap-1.5 text-gold-600 dark:text-gold-400 font-bold font-display uppercase tracking-widest text-[9px] border-b border-gold-500/5 pb-1 mb-1.5">

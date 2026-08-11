@@ -7,7 +7,7 @@ export interface SearchState {
   topic: string;
   chapter: string; // string representing number or empty
   exactPhrase: boolean;
-  activeView: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference';
+  activeView: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference' | 'chronicle';
 }
 
 /**
@@ -38,7 +38,7 @@ export function parseUrlParams(): Partial<SearchState> {
   if (exact !== null) state.exactPhrase = exact === 'true';
 
   const view = params.get('view');
-  if (view && ['dashboard', 'search', 'advanced', 'bookmarks', 'counsel', 'reference'].includes(view)) {
+  if (view && ['dashboard', 'search', 'advanced', 'bookmarks', 'counsel', 'reference', 'chronicle'].includes(view)) {
     state.activeView = view as SearchState['activeView'];
   }
 

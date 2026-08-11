@@ -483,7 +483,7 @@ export function CounselMode({
             <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5 animate-pulse text-amber-500" />
             <div>
               <span className="font-bold uppercase tracking-wider text-[10px] block mb-0.5">⚠️ AI Counselor Disclaimer</span>
-              Please note that AI is unpredictable and can sometimes provide incorrect or inaccurate answers. Always verify scriptural references, hadiths, contexts and rulings with qualified scholars or authentic sources.
+              Please note that AI is unpredictable and can sometimes provide incorrect or inaccurate answers. Always verify scriptural references, hadiths, contexts of the given answer/question and rulings with qualified scholars or authentic sources.
             </div>
           </div>
 

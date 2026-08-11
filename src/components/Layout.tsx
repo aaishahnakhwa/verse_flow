@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart, BookOpen, Home } from 'lucide-react';
+import { Sun, Moon, Bookmark, Compass, Search, Keyboard, Heart, BookOpen, Home, History } from 'lucide-react';
 import { Button } from './ui/Button';
+import { cn } from '../utils/cn';
 
 interface LayoutProps {
   children: React.ReactNode;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
-  activeView: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference';
-  onViewChange: (view: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference') => void;
+  activeView: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference' | 'chronicle';
+  onViewChange: (view: 'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference' | 'chronicle') => void;
   onHelpClick: () => void;
   bookmarksCount: number;
 }
@@ -57,6 +58,8 @@ export function Layout({
             onViewChange('counsel');
           } else if (nextEvent.key === 'r') {
             onViewChange('reference');
+          } else if (nextEvent.key === 'p') {
+            onViewChange('chronicle');
           }
           window.removeEventListener('keydown', nextKeyHandler);
         };
@@ -70,15 +73,25 @@ export function Layout({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onThemeToggle, onHelpClick, onViewChange]);
 
+  const isChronicle = activeView === 'chronicle';
+
   return (
-    <div className="min-h-screen flex flex-col bg-islamic-pattern bg-repeat relative overflow-x-hidden">
+    <div className={cn(
+      "min-h-screen flex flex-col relative overflow-x-hidden",
+      isChronicle ? "bg-slate-950 text-slate-100" : "bg-islamic-pattern bg-repeat"
+    )}>
       {/* Ambient background glows */}
-      <div className="absolute top-20 left-[10%] w-[350px] h-[350px] rounded-full bg-gold-500/6 dark:bg-gold-500/3 blur-[80px] pointer-events-none" />
-      <div className="absolute top-[35%] right-[8%] w-[450px] h-[450px] rounded-full bg-gold-500/5 dark:bg-gold-500/2.5 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[20%] left-[5%] w-[400px] h-[400px] rounded-full bg-gold-500/4 dark:bg-gold-500/2 blur-[90px] pointer-events-none" />
+      {!isChronicle && (
+        <>
+          <div className="absolute top-20 left-[10%] w-[350px] h-[350px] rounded-full bg-gold-500/6 dark:bg-gold-500/3 blur-[80px] pointer-events-none" />
+          <div className="absolute top-[35%] right-[8%] w-[450px] h-[450px] rounded-full bg-gold-500/5 dark:bg-gold-500/2.5 blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-[20%] left-[5%] w-[400px] h-[400px] rounded-full bg-gold-500/4 dark:bg-gold-500/2 blur-[90px] pointer-events-none" />
+        </>
+      )}
 
       {/* Top Header */}
-      <header className="sticky top-0 z-40 w-full glass border-b border-slate-200/50 dark:border-slate-800/40 px-4 sm:px-6 py-3.5">
+      {!isChronicle && (
+        <header className="sticky top-0 z-40 w-full glass border-b border-slate-200/50 dark:border-slate-800/40 px-4 sm:px-6 py-3.5">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           
           {/* Logo Brand */}
@@ -135,6 +148,16 @@ export function Layout({
             >
               <Compass className="h-4 w-4" />
               <span className="hidden sm:inline font-display text-xs font-semibold">Advanced</span>
+            </Button>
+
+            <Button
+              variant={(activeView as string) === 'chronicle' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => onViewChange('chronicle')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 cursor-pointer"
+            >
+              <History className="h-4 w-4" />
+              <span className="hidden sm:inline font-display text-xs font-semibold">Chronicles</span>
             </Button>
 
             <Button
@@ -202,14 +225,19 @@ export function Layout({
 
         </div>
       </header>
+      )}
 
       {/* Main Body */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+      <main className={cn(
+        "flex-1 w-full",
+        isChronicle ? "h-screen flex flex-col overflow-hidden" : "max-w-6xl mx-auto px-4 sm:px-6 py-8"
+      )}>
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200/50 dark:border-slate-800/40 py-6 px-4 bg-slate-50 dark:bg-slate-950/40 text-center">
+      {!isChronicle && (
+        <footer className="mt-auto border-t border-slate-200/50 dark:border-slate-800/40 py-6 px-4 bg-slate-50 dark:bg-slate-950/40 text-center">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 dark:text-slate-500 font-medium font-display">
           <div>
             © {new Date().getFullYear()} VerseFlow Library • Authentic reference database.
@@ -221,6 +249,7 @@ export function Layout({
           </div>
         </div>
       </footer>
+      )}
     </div>
   );
 }

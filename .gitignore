@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+
+# Reference files
+document.pdf
+scripts/read_pdf_text.js
+

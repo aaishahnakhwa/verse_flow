@@ -1,17 +1,21 @@
 import * as React from 'react';
-import { Sparkles, Loader2, AlertCircle, BookOpen } from 'lucide-react';
+import { Loader2, AlertCircle, BookOpen } from 'lucide-react';
 import type { ScriptureEntry } from '../types/scripture';
 import { QURAN_ARABIC_DATA } from '../search/quranArabicData';
 import { transliterateUrduToRoman } from '../utils/transliterate';
 
 interface QuranVerseTextProps {
   entry: ScriptureEntry;
-  highlightedHtml?: string;
   isActive?: boolean;
+  highlightedHtml?: string;
   preloadedAr?: string;
   preloadedTr?: string;
   preloadedRo?: string;
+  preloadedTj?: string;
 }
+
+import { formatTajweedTransliteration, cleanTajweedMarkup } from '../utils/tajweed';
+import type { QuranWord } from '../utils/tajweed';
 
 export function QuranVerseText({
   entry,
@@ -20,9 +24,9 @@ export function QuranVerseText({
   preloadedAr,
   preloadedTr,
   preloadedRo,
+  preloadedTj,
 }: QuranVerseTextProps) {
-  const [onlineData, setOnlineData] = React.useState<{ ar: string; tr: string; ro?: string } | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [onlineData, setOnlineData] = React.useState<{ ar: string; tr: string; ro?: string; tj?: string } | null>(null);
   const [error, setError] = React.useState(false);
 
   const [tafsirText, setTafsirText] = React.useState<string | null>(null);
@@ -30,57 +34,119 @@ export function QuranVerseText({
   const [isLoadingTafsir, setIsLoadingTafsir] = React.useState(false);
   const [tafsirError, setTafsirError] = React.useState(false);
 
-  const quranKey = `${entry.chapter}:${entry.verse}`;
-  const localData = QURAN_ARABIC_DATA[quranKey];
+  const [showTajweed, setShowTajweed] = React.useState(false);
+
+  const isQuran = entry.collection.toLowerCase() === 'quran';
+  const quranKey = isQuran ? `${entry.chapter}:${entry.verse}` : '';
+  const localData = isQuran ? QURAN_ARABIC_DATA[quranKey] : null;
 
   // If preloaded or local static fallback exists, use it. Otherwise, use dynamically fetched online state.
-  const arText = preloadedAr || localData?.ar || onlineData?.ar;
-  const trText = preloadedTr || localData?.tr || onlineData?.tr;
+  const arText = (preloadedAr ? cleanTajweedMarkup(preloadedAr) : '') || onlineData?.ar || localData?.ar;
+  const trText = preloadedTr || onlineData?.tr || localData?.tr;
   const roText = preloadedRo || onlineData?.ro;
+  const tjText = preloadedTj || onlineData?.tj;
 
-  const handleLoadArabic = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (arText || isLoading) return;
+  const handleToggleTajweed = async () => {
+    if (!isQuran) return;
+    if (showTajweed) {
+      setShowTajweed(false);
+      return;
+    }
 
-    setIsLoading(true);
-    setError(false);
+    if (tjText) {
+      setShowTajweed(true);
+      return;
+    }
+
+    // Fetch Tajweed transliteration on demand if not pre-fetched
     try {
-      // 1. Fetch Uthmani Arabic script from the official Quran API
-      const arRes = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?verse_key=${quranKey}`);
-      if (!arRes.ok) throw new Error('Arabic fetch failed');
-      const arJson = await arRes.json();
-      const arVal = arJson.verses?.[0]?.text_uthmani;
-
-      // 2. Fetch English transliteration (translation resource 57)
-      const trRes = await fetch(`https://api.quran.com/api/v4/quran/translations/57?verse_key=${quranKey}`);
-      if (!trRes.ok) throw new Error('Transliteration fetch failed');
-      const trJson = await trRes.json();
-      const trVal = trJson.translations?.[0]?.text?.replace(/<[^>]*>/g, ''); // strip inline HTML formatting tags
-
-      // 3. Fetch Roman Urdu (Hinglish) translation (translation resource 831)
-      let roVal = '';
-      try {
-        const roRes = await fetch(`https://api.quran.com/api/v4/quran/translations/831?verse_key=${quranKey}`);
-        if (roRes.ok) {
-          const roJson = await roRes.json();
-          roVal = roJson.translations?.[0]?.text?.replace(/<[^>]*>/g, '');
-        }
-      } catch (err) {
-        console.error('Failed to load Roman Urdu translation:', err);
-      }
-
-      if (arVal && trVal) {
-        setOnlineData({ ar: arVal, tr: trVal, ro: roVal });
-      } else {
-        throw new Error('Incomplete data response');
+      const tjRes = await fetch(`https://api.quran.com/api/v4/verses/by_key/${quranKey}?words=true`);
+      if (tjRes.ok) {
+        const tjJson = await tjRes.json();
+        const words: QuranWord[] = tjJson?.verse?.words || [];
+        const translitWords = words
+          .filter((w: QuranWord) => w.char_type_name === 'word')
+          .map((w: QuranWord) => w.transliteration?.text || '');
+        const tjVal = formatTajweedTransliteration(translitWords);
+        
+        setOnlineData(prev => ({
+          ar: prev?.ar || arText || '',
+          tr: prev?.tr || trText || '',
+          ro: prev?.ro || roText || '',
+          tj: tjVal
+        }));
+        setShowTajweed(true);
       }
     } catch (err) {
-      console.error('Failed to load Quran script details:', err);
-      setError(true);
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to load Tajweed transliteration on demand:', err);
     }
   };
+
+  // Automatically fetch online Tajweed data (Arabic & transliterations) in the background on mount
+  React.useEffect(() => {
+    if (!isQuran) return;
+    if (preloadedAr && preloadedTr && preloadedTj) {
+      // Already fully preloaded (like in Reader Mode chapter load)
+      return;
+    }
+
+    let active = true;
+    const autoFetchDetails = async () => {
+      try {
+        const [arRes, roRes, tjRes] = await Promise.all([
+          fetch(`https://api.quran.com/api/v4/quran/verses/uthmani_tajweed?verse_key=${quranKey}`),
+          fetch(`https://api.quran.com/api/v4/quran/translations/831?verse_key=${quranKey}`),
+          fetch(`https://api.quran.com/api/v4/verses/by_key/${quranKey}?words=true`)
+        ]);
+
+        if (!active) return;
+
+        let arVal = '';
+        let roVal = '';
+        let tjVal = '';
+
+        if (arRes.ok) {
+          const arJson = await arRes.json();
+          const rawAr = arJson.verses?.[0]?.text_uthmani_tajweed || '';
+          arVal = cleanTajweedMarkup(rawAr);
+        }
+
+        if (roRes.ok) {
+          const roJson = await roRes.json();
+          roVal = roJson.translations?.[0]?.text?.replace(/<[^>]*>/g, '') || '';
+        }
+
+        if (tjRes.ok) {
+          const tjJson = await tjRes.json();
+          const words = tjJson.verse?.words || [];
+          const translitWords = words
+            .filter((w: QuranWord) => w.char_type_name === 'word')
+            .map((w: QuranWord) => w.transliteration?.text || '');
+          tjVal = formatTajweedTransliteration(translitWords);
+        }
+
+        if (active && (arVal || roVal || tjVal)) {
+          setOnlineData({
+            ar: arVal,
+            tr: localData?.tr || '',
+            ro: roVal,
+            tj: tjVal
+          });
+        }
+      } catch (err) {
+        console.error('Failed to auto-fetch Quran verse details in background:', err);
+        if (active) {
+          setError(true);
+        }
+      }
+    };
+
+    autoFetchDetails();
+
+    return () => {
+      active = false;
+    };
+  }, [quranKey, preloadedAr, preloadedTr, preloadedTj, localData, isQuran]);
 
   const handleLoadTafsir = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -168,23 +234,59 @@ export function QuranVerseText({
     }
   };
 
+  if (!isQuran) {
+    return (
+      <div className="text-base text-slate-800 dark:text-stone-300 leading-relaxed font-serif font-normal text-left">
+        {entry.text}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Arabic Script display */}
       {arText && (
         <p
-          className="text-right text-2xl sm:text-3xl font-serif text-slate-900 dark:text-gold-100 leading-loose tracking-wide font-normal select-all mt-2 select-text cursor-text"
+          className="text-right text-2xl sm:text-3xl font-serif text-slate-900 dark:text-gold-100 leading-loose tracking-wide font-normal select-all mt-2 select-text cursor-text tajweed-container"
           dir="rtl"
-        >
-          {arText}
-        </p>
+          dangerouslySetInnerHTML={{ __html: arText }}
+        />
       )}
 
       {/* English Transliteration display */}
       {trText && (
-        <p className="text-left text-xs font-serif-italic text-slate-500 dark:text-slate-400 pl-4 border-l border-slate-300 dark:border-gold-500/15 leading-relaxed select-text cursor-text">
-          {trText}
-        </p>
+        <div className="space-y-2 mt-1.5 pl-4 border-l border-slate-300 dark:border-gold-500/15 text-left leading-relaxed">
+          <div>
+            <span className="text-[9px] uppercase tracking-wider font-bold opacity-60 block text-slate-400 dark:text-slate-500">
+              Standard Transliteration
+            </span>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <p className="text-xs font-serif-italic text-slate-500 dark:text-slate-400 select-text cursor-text">
+                {trText}
+              </p>
+              {!tjText && (
+                <button
+                  type="button"
+                  onClick={handleToggleTajweed}
+                  className="text-[9px] font-bold font-display uppercase tracking-wider text-gold-600 dark:text-gold-500 hover:underline cursor-pointer no-print shrink-0"
+                >
+                  (Load Tajweed Translit)
+                </button>
+              )}
+            </div>
+          </div>
+
+          {tjText && (
+            <div className="mt-1.5 animate-in fade-in duration-200">
+              <span className="text-[9px] uppercase tracking-wider font-bold opacity-60 block text-slate-400 dark:text-slate-500">
+                Tajweed Transliteration (Phonetic Recitation)
+              </span>
+              <p className="text-xs font-serif-italic text-slate-500 dark:text-slate-400 select-text cursor-text">
+                {tjText}
+              </p>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Main English Translation (with highlight support if provided) */}
@@ -244,26 +346,6 @@ export function QuranVerseText({
 
       {/* Progressive loading buttons */}
       <div className="pt-2 flex flex-wrap items-center gap-3 no-print">
-        {!arText && (
-          <button
-            type="button"
-            onClick={handleLoadArabic}
-            disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gold-500/20 bg-gold-500/5 hover:bg-gold-500/15 text-[10px] font-bold font-display uppercase tracking-wider text-gold-600 dark:text-gold-400 transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin text-gold-500" />
-                <span>Loading script...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-3 w-3" />
-                <span>Show Arabic & Transliteration</span>
-              </>
-            )}
-          </button>
-        )}
 
         {!(tafsirText || tafsirHinglish) ? (
           <button

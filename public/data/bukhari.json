@@ -44,15 +44,15 @@
     "keywords": ["charity", "family", "intentions", "spending", "sadaqah"]
   },
   {
-    "id": "bukhari_3010",
+    "id": "bukhari_2363",
     "collection": "Sahih al-Bukhari",
-    "book": "Jihad",
-    "chapter": 56,
-    "hadithNumber": 3010,
-    "reference": "Sahih al-Bukhari 3010",
-    "text": "The Prophet (ﷺ) said, \"A good deed done to a beast is as meritorious as a good deed done to a human being. Verily, Allah is kind and loves kindness in all matters.\"",
-    "topics": ["kindness", "animals", "mercy"],
-    "keywords": ["beast", "kindness", "mercy", "animals", "rifq"]
+    "book": "Watering",
+    "chapter": 42,
+    "hadithNumber": 2363,
+    "reference": "Sahih al-Bukhari 2363",
+    "text": "Narrated Abu Huraira: Allah's Messenger (ﷺ) said, \"While a man was walking he felt thirsty and went down a well and drank water from it. On coming out of it, he saw a dog panting and eating mud because of excessive thirst. The man said, 'This (dog) is suffering from the same problem as that of mine.' So he went down the well again, filled his shoe with water, held it with his teeth and climbed up and watered the dog. Allah thanked him for his (good) deed and forgave him.\" The people asked, \"O Allah's Messenger (ﷺ)! Is there a reward for us in serving these animals?\" He replied: \"There is a reward for serving any living being.\"",
+    "topics": ["kindness", "animals", "mercy", "forgiveness"],
+    "keywords": ["well", "shoe", "dog", "thirsty", "mercy", "animals", "reward"]
   },
   {
     "id": "bukhari_6407",

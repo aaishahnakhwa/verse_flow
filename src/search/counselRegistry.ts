@@ -86,7 +86,7 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
     excludeKeywords: ['job', 'unemployed', 'exams', 'exam', 'cancer', 'disease', 'illness', 'repent', 'sins', 'sin'],
     counselText: 'Human relationships are testaments of patience and mercy. The Quran urges us to respond to discord with kindness and to pray for harmony in our households. In Surah Al-Furqan (25:74), the believers are described as those who pray: "Our Lord, grant us from among our wives and offspring comfort to our eyes." When dealing with conflicts, maintain ties of kinship, communicate with grace, and remember that resolving disputes earns high spiritual status.',
     matchingVerses: ['25:74', '30:21', '3:159', '49:10', '17:23'],
-    matchingHadiths: ['bukhari_3010', 'bukhari_54', 'abudawud_4941', 'tirmidhi_1986'],
+    matchingHadiths: ['bukhari_2363', 'bukhari_54', 'abudawud_4941', 'tirmidhi_1986'],
     recommendedDua: {
       arabic: 'رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا',
       transliteration: 'Rabbana hab lana min azwajina wa dhurriyyatina qurrata a\'yunin wa-j\'alna lil-muttaqina imama.',
@@ -105,7 +105,7 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
     excludeKeywords: ['job', 'work', 'money', 'exams', 'debt', 'marriage', 'divorce', 'sin', 'guilt'],
     counselText: 'Physical pain and illness are difficult trials, but in Islamic teachings, they serve as a profound means of purification and expiation of sins. In Surah Ash-Shu’ara (26:80), Prophet Ibrahim proclaims: "And when I am ill, it is He who cures me." Trust in Allah’s healing, seek medical treatment, and remember the legendary patience of Prophet Ayyub (AS), who called upon Allah in his extreme suffering with absolute respect.',
     matchingVerses: ['26:80', '21:83', '21:84', '17:82', '10:57'],
-    matchingHadiths: ['muslim_223', 'bukhari_3010'],
+    matchingHadiths: ['muslim_223', 'bukhari_2363'],
     recommendedDua: {
       arabic: 'أَنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ',
       transliteration: 'Anni massaniya-ddurru wa-anta arhamur-rahimin.',
@@ -164,7 +164,7 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
     excludeKeywords: ['job', 'money', 'exams', 'illness', 'cancer', 'repent', 'sins', 'sin'],
     counselText: 'Anger is a spark from Satan that can consume our peace and reasoning. The Quran praises those who restrain their anger and pardon others as people of excellence (Muhsinin). In Surah Al-Imran (3:134), the righteous are described as "those who restrain anger and who pardon the people." When anger strikes, seek refuge in Allah, sit or lie down, make wudu, and choose the path of forgiveness.',
     matchingVerses: ['3:134', '7:200', '42:37', '41:34', '25:63'],
-    matchingHadiths: ['bukhari_3010', 'tirmidhi_2002', 'nasai_2526'],
+    matchingHadiths: ['bukhari_2363', 'tirmidhi_2002', 'nasai_2526'],
     recommendedDua: {
       arabic: 'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ',
       transliteration: 'A\'udhu billahi minash-shaytanir-rajim.',
@@ -202,7 +202,7 @@ export const COUNSELING_REGISTRY: CounselingProfile[] = [
     excludeKeywords: ['died', 'death', 'funeral', 'passed away', 'grave', 'job', 'exams'],
     counselText: 'Kindness to parents (Birr al-Walidayn) is one of the highest virtues in Islam, ranked immediately after worshiping Allah alone. In Surah Al-Isra (17:23), Allah commands: "Do not say to them [even] \'uff\' and do not repel them but speak to them a noble word." Even when parents are challenging, hold different values, or cause stress, Islam instructs us to treat them with patience and gentle speech, while keeping your boundaries halal. Continuously pray for their guidance and well-being.',
     matchingVerses: ['17:23', '17:24', '31:14', '31:15', '46:15'],
-    matchingHadiths: ['bukhari_3010', 'tirmidhi_1986'],
+    matchingHadiths: ['bukhari_2363', 'tirmidhi_1986'],
     recommendedDua: {
       arabic: 'رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',
       transliteration: 'Rabbi-rhamhuma kama rabbayani saghira.',

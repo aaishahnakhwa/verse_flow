@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @import "tailwindcss";
 
@@ -335,5 +335,212 @@ mark {
     color: #444 !important;
     font-size: 9pt !important;
     line-height: 1.4 !important;
+  }
+}
+
+/* Screen utility for print only */
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Tajweed color-coding styles (Universal Dar Al-Ma'rifah Standard) */
+.tajweed-container,
+.verse-arabic {
+  font-family: 'Amiri', serif !important;
+}
+
+.tajweed-container tajweed,
+.verse-arabic tajweed {
+  font-family: 'Amiri', serif !important;
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* 1. Madd / Elongation (Red / Crimson) */
+.tajweed-container .madda_normal,
+.tajweed-container .madda_permissible,
+.tajweed-container .madda_obligatory,
+.tajweed-container .madda_necessary,
+.verse-arabic .madda_normal,
+.verse-arabic .madda_permissible,
+.verse-arabic .madda_obligatory,
+.verse-arabic .madda_necessary {
+  color: #dc2626 !important; /* vibrant red */
+  font-weight: bold;
+}
+.dark .tajweed-container .madda_normal,
+.dark .tajweed-container .madda_permissible,
+.dark .tajweed-container .madda_obligatory,
+.dark .tajweed-container .madda_necessary {
+  color: #f87171 !important; /* soft red in dark theme */
+}
+
+/* 2. Ghunnah / Nasalization Rules (Green) 
+   Includes Ghunnah Mushaddadah, Ikhfa (ikhafa), Iqlab, Idgham with Ghunnah, Idgham Shafawi, and Idgham Mithlayn */
+.tajweed-container .ghunnah,
+.tajweed-container .ikhfa,
+.tajweed-container .ikhafa,
+.tajweed-container .ikhafa_shafawi,
+.tajweed-container .iqlab,
+.tajweed-container .idgham_ghunnah,
+.tajweed-container .idgham_shafawi,
+.tajweed-container .idgham_mthn,
+.verse-arabic .ghunnah,
+.verse-arabic .ikhfa,
+.verse-arabic .ikhafa,
+.verse-arabic .ikhafa_shafawi,
+.verse-arabic .iqlab,
+.verse-arabic .idgham_ghunnah,
+.verse-arabic .idgham_shafawi,
+.verse-arabic .idgham_mthn {
+  color: #16a34a !important; /* forest green */
+  font-weight: bold;
+}
+.dark .tajweed-container .ghunnah,
+.dark .tajweed-container .ikhfa,
+.dark .tajweed-container .ikhafa,
+.dark .tajweed-container .ikhafa_shafawi,
+.dark .tajweed-container .iqlab,
+.dark .tajweed-container .idgham_ghunnah,
+.dark .tajweed-container .idgham_shafawi,
+.dark .tajweed-container .idgham_mthn {
+  color: #4ade80 !important; /* light green in dark theme */
+}
+
+/* 3. Qalqalah / Bouncing letters (Indigo) */
+.tajweed-container .qalqalah,
+.tajweed-container .qalaqah,
+.verse-arabic .qalqalah,
+.verse-arabic .qalaqah {
+  color: #4f46e5 !important; /* Indigo Blue */
+  font-weight: bold;
+}
+.dark .tajweed-container .qalqalah,
+.dark .tajweed-container .qalaqah {
+  color: #818cf8 !important; /* Light Indigo in dark theme */
+}
+
+/* 4. Silent / Connecting / Assimilation Letters (Muted/Grey) 
+   Includes Hamzatul Wasl, Silent Lam, silent letters (slnt), and Idgham without Ghunnah */
+.tajweed-container .ham_wasl,
+.tajweed-container .laam_shamsiyah,
+.tajweed-container .slnt,
+.tajweed-container .idgham_wo_ghunnah,
+.tajweed-container .idgham_mutajanisayn,
+.tajweed-container .idgham_mutaqaribayn,
+.tajweed-container .idgham,
+.verse-arabic .ham_wasl,
+.verse-arabic .laam_shamsiyah,
+.verse-arabic .slnt,
+.verse-arabic .idgham_wo_ghunnah,
+.verse-arabic .idgham_mutajanisayn,
+.verse-arabic .idgham_mutaqaribayn,
+.verse-arabic .idgham {
+  color: #94a3b8 !important; /* slate grey in light theme */
+  opacity: 0.65;
+}
+.dark .tajweed-container .ham_wasl,
+.dark .tajweed-container .laam_shamsiyah,
+.dark .tajweed-container .slnt,
+.dark .tajweed-container .idgham_wo_ghunnah,
+.dark .dark .tajweed-container .idgham_mutajanisayn,
+.dark .tajweed-container .idgham_mutaqaribayn,
+.dark .tajweed-container .idgham {
+  color: #64748b !important; /* darker slate in dark theme */
+  opacity: 0.65;
+}
+
+/* 5. Verse end indicator */
+.tajweed-container .end,
+.verse-arabic .end {
+  font-size: 0.75em;
+  color: #dca523 !important;
+  margin-left: 6px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+/* 6. Tafkheem (Heavy Ra - Navy Blue) */
+.tajweed-container .tafkheem,
+.verse-arabic .tafkheem {
+  color: #1e40af !important; /* Navy Dark Blue */
+  font-weight: bold;
+}
+.dark .tajweed-container .tafkheem {
+  color: #3b82f6 !important; /* Bold Royal Blue in dark theme */
+}
+
+/* 7. Tarqeeq (Light Ra - Light Blue/Cyan) */
+.tajweed-container .tarqeeq,
+.verse-arabic .tarqeeq {
+  color: #0891b2 !important; /* Cyan / Turquoise */
+  font-weight: bold;
+}
+.dark .tajweed-container .tarqeeq {
+  color: #22d3ee !important;
+}
+
+/* PRINT CSS overrides to keep Tajweed colors vibrant in PDF */
+@media print {
+  .verse-arabic .ham_wasl,
+  .verse-arabic .laam_shamsiyah,
+  .verse-arabic .slnt,
+  .verse-arabic .idgham_wo_ghunnah,
+  .verse-arabic .idgham_mutajanisayn,
+  .verse-arabic .idgham_mutaqaribayn,
+  .verse-arabic .idgham {
+    color: #94a3b8 !important;
+    opacity: 0.65;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .madda_normal,
+  .verse-arabic .madda_permissible,
+  .verse-arabic .madda_obligatory,
+  .verse-arabic .madda_necessary {
+    color: #dc2626 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .ghunnah,
+  .verse-arabic .ikhfa,
+  .verse-arabic .ikhafa,
+  .verse-arabic .ikhafa_shafawi,
+  .verse-arabic .iqlab,
+  .verse-arabic .idgham_ghunnah,
+  .verse-arabic .idgham_shafawi,
+  .verse-arabic .idgham_mthn {
+    color: #16a34a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .qalqalah,
+  .verse-arabic .qalaqah {
+    color: #4f46e5 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .tafkheem {
+    color: #1e40af !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .tarqeeq {
+    color: #0891b2 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .verse-arabic .end {
+    color: #b45309 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }

@@ -22,7 +22,6 @@ import { Button } from './components/ui/Button';
 import { CounselMode } from './components/CounselMode';
 import { ReferenceHub } from './components/ReferenceHub';
 import { DashboardHome } from './components/DashboardHome';
-import { ProphetsChronicle } from './components/ProphetsChronicle';
 
 const POPULAR_SEARCHES = ['patience', 'anxiety', 'depression', 'charity', '2:255', 'Moses', 'forgiveness', 'knowledge'];
 
@@ -43,7 +42,7 @@ export default function App() {
   const [scriptureCategory, setScriptureCategory] = React.useState<'quran' | 'hadith' | null>(null);
   
   // 3. View Management
-  const [activeView, setActiveView] = React.useState<'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference' | 'chronicle'>('dashboard');
+  const [activeView, setActiveView] = React.useState<'dashboard' | 'search' | 'advanced' | 'bookmarks' | 'counsel' | 'reference'>('dashboard');
   const [isHelpOpen, setIsHelpOpen] = React.useState(false);
   const [isMobileConcordanceOpen, setIsMobileConcordanceOpen] = React.useState(false);
 
@@ -1024,17 +1023,6 @@ export default function App() {
             {/* View 5: Reference Guides Hub */}
             {activeView === 'reference' && (
               <ReferenceHub initialTab={referenceInitialTab} />
-            )}
-
-            {/* View 6: Prophets' Chronicle & Atmosphere Timeline View */}
-            {activeView === 'chronicle' && (
-              <ProphetsChronicle
-                searchEngine={searchEngine}
-                bookmarks={bookmarks}
-                onToggleBookmark={handleToggleBookmark}
-                onReadContext={handleOpenReader}
-                onExit={() => setActiveView('dashboard')}
-              />
             )}
           </motion.div>
         )}

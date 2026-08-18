@@ -120,14 +120,34 @@ export function CounselMode({
     setChatInput('');
     setErrorMsg('');
 
+    // Fetch relevant local scriptures as context (RAG) to prevent LLM hallucinations
+    let contextSnippet = '';
+    try {
+      const matches = searchEngine.searchCollections({ query: userText });
+      if (matches && matches.length > 0) {
+        // Take top 3 most relevant matches
+        contextSnippet = matches.slice(0, 3).map(m => 
+          `[Source: ${m.collection} ${m.reference}]\nText: "${m.text}"`
+        ).join('\n\n');
+      }
+    } catch (err) {
+      console.error('Failed to retrieve search context for AI Chat:', err);
+    }
+
     const newMessages = [...chatMessages, { role: 'user' as const, content: userText }];
     setChatMessages(newMessages);
     setIsAiSending(true);
 
+    const systemPrompt = `You are an empathetic, wise, and highly knowledgeable AI Islamic Spiritual Counselor. Your goal is to help users find comfort, guidance, and peace by answering their questions and sharing relevant verses from the Quran, Hadiths, and stories of the prophets, sahabas, and sahabiyat. Keep your tone gentle, compassionate, and faithful. Use appropriate greetings (e.g., Salaam) and respect suffixes (e.g., SAW, AS, RA) where appropriate. Detect the language used by the user: if the user talks or asks questions in Hinglish (a mixture of Hindi and English written in Latin/English characters), you MUST respond in friendly, conversational Hinglish. Keep scriptural quotes and transliterations accurate, but explain and comfort them in the same Hinglish style. Format references clearly (e.g., **Surah Al-Baqarah 2:153**) so they stand out.
+
+AUTHENTIC SCRIPTURAL CONTEXT FROM OUR DATABASE:
+The following are verified, authentic verses or Hadiths retrieved from our local database matching the user's query. You MUST prioritize quoting, referencing, and explaining these specific passages if they are relevant to the user's situation. Do NOT make up, invent, or hallucinate any verse texts or scripture references that are not present in this context or in your verified training weights:
+${contextSnippet ? contextSnippet : "No matching verified local context found for this query. Provide general comforting advice and remind the user to verify references."}`;
+
     const payloadMessages = [
       {
         role: 'system' as const,
-        content: 'You are an empathetic, wise, and highly knowledgeable AI Islamic Spiritual Counselor. Your goal is to help users find comfort, guidance, and peace by answering their questions and sharing relevant verses from the Quran, Hadiths, and stories of the prophets, sahabas, and sahabiyat. Keep your tone gentle, compassionate, and faithful. Use appropriate greetings (e.g., Salaam) and respect suffixes (e.g., SAW, AS, RA) where appropriate. Detect the language used by the user: if the user talks or asks questions in Hinglish (a mixture of Hindi and English written in Latin/English characters), you MUST respond in friendly, conversational Hinglish. Keep scriptural quotes and transliterations accurate, but explain and comfort them in the same Hinglish style. Format references clearly (e.g., **Surah Al-Baqarah 2:153**) so they stand out.'
+        content: systemPrompt
       },
       ...newMessages
     ];
